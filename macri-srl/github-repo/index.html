@@ -1227,17 +1227,22 @@
 
   map.once('click', () => map.scrollWheelZoom.enable());
 
-  // ── Form validazione ──
-  document.getElementById('btn-invia').addEventListener('click', function() {
-    const nome  = document.getElementById('f-nome').value.trim();
-    const email = document.getElementById('f-email').value.trim();
-    const tipo  = document.getElementById('f-tipo').value;
-    const msg   = document.getElementById('f-msg').value.trim();
-    const priv  = document.getElementById('f-privacy').checked;
+  // ── Form → Web3Forms ──
+  document.getElementById('btn-invia').addEventListener('click', async function() {
+    const nome   = document.getElementById('f-nome').value.trim();
+    const email  = document.getElementById('f-email').value.trim();
+    const tel    = document.getElementById('f-tel').value.trim();
+    const tipo   = document.getElementById('f-tipo').value;
+    const comune = document.getElementById('f-comune').value.trim();
+    const budget = document.getElementById('f-budget').value;
+    const msg    = document.getElementById('f-msg').value.trim();
+    const priv   = document.getElementById('f-privacy').checked;
 
+    // Reset errori
     ['f-nome','f-email','f-tipo','f-msg'].forEach(id => document.getElementById(id).style.borderColor = '');
     document.getElementById('f-privacy').style.outline = '';
 
+    // Validazione
     let ok = true;
     if (!nome)  { document.getElementById('f-nome').style.borderColor  = '#c0392b'; ok = false; }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
@@ -1248,13 +1253,45 @@
     if (!ok) return;
 
     const btn = document.getElementById('btn-invia');
-    btn.textContent = 'Invio in corso…'; btn.disabled = true;
-    setTimeout(() => {
-      document.getElementById('form-fields').style.display = 'none';
-      document.getElementById('form-success').classList.add('show');
-    }, 1200);
+    btn.innerHTML = 'Invio in corso…'; btn.disabled = true;
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          access_key:  '821cc9de-a678-48d5-8b6b-f059d77f8900',
+          subject:     'Nuova richiesta preventivo – Macri S.r.l.',
+          from_name:   'Sito Macri S.r.l.',
+          name:        nome,
+          email:       email,
+          message: [
+            `Nome: ${nome}`,
+            `Email: ${email}`,
+            `Telefono: ${tel || 'non fornito'}`,
+            `Tipo intervento: ${tipo}`,
+            `Comune: ${comune || 'non specificato'}`,
+            `Budget: ${budget || 'non specificato'}`,
+            ``,
+            `Descrizione:`,
+            msg
+          ].join('\n')
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('form-fields').style.display = 'none';
+        document.getElementById('form-success').classList.add('show');
+      } else {
+        throw new Error('Risposta negativa');
+      }
+    } catch(err) {
+      btn.innerHTML = 'Invia richiesta <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+      btn.disabled = false;
+      alert('Errore durante l\'invio. Riprova o contattaci direttamente per email.');
+    }
   });
 </script>
 </body>
 </html>
-
