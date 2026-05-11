@@ -602,10 +602,68 @@
       border: 1px solid rgba(255,255,255,0.1);
     }
 
+    /* ─────────── HAMBURGER & MENU MOBILE ─────────── */
+    .hamburger {
+      display: none;
+      flex-direction: column; justify-content: center; align-items: center;
+      gap: 5px; width: 40px; height: 40px;
+      background: none; border: none; cursor: pointer; padding: 4px;
+      z-index: 300;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: var(--bianco);
+      transition: transform 0.3s, opacity 0.3s, width 0.3s;
+      transform-origin: center;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; width: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .nav-mobile {
+      display: none;
+      position: fixed; top: 72px; left: 0; right: 0; bottom: 0;
+      background: rgba(5, 15, 30, 0.98);
+      backdrop-filter: blur(12px);
+      z-index: 150;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 0;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .nav-mobile.open {
+      opacity: 1; pointer-events: all;
+    }
+    .nav-mobile a {
+      display: block; width: 100%;
+      text-align: center;
+      text-decoration: none;
+      color: rgba(255,255,255,0.75);
+      font-size: 1.1rem; font-weight: 400;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 1.1rem 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-mobile a:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+    .nav-mobile a:hover { color: var(--accento); background: rgba(255,255,255,0.03); }
+    .nav-mobile .nav-cta-mobile {
+      margin: 1.5rem 2rem 0;
+      display: block; width: calc(100% - 4rem);
+      text-align: center;
+      padding: 1rem 2rem;
+      background: var(--accento); color: var(--blu) !important;
+      font-weight: 500 !important; font-size: 0.9rem !important;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      text-decoration: none; border: none;
+    }
+
     /* ─────────── RESPONSIVE ─────────── */
     @media (max-width: 960px) {
       nav { padding: 0 1.5rem; }
       nav ul { display: none; }
+      .hamburger { display: flex; }
+      .nav-mobile { display: flex; }
       .hero-content { padding: 0 1.5rem 5rem; }
       .hero-scroll { display: none; }
       .stats { grid-template-columns: 1fr 1fr; }
@@ -645,7 +703,21 @@
     <li><a href="#contatti">Contatti</a></li>
     <li><a href="#form-richiesta" class="nav-cta">Richiedi Preventivo</a></li>
   </ul>
+  <button class="hamburger" id="hamburger" aria-label="Apri menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- Menu mobile -->
+<div class="nav-mobile" id="navMobile">
+  <a href="#servizi">Servizi</a>
+  <a href="#progetti">Progetti</a>
+  <a href="#team">Il Team</a>
+  <a href="#certificazioni">Certificazioni</a>
+  <a href="#chi-siamo">Chi Siamo</a>
+  <a href="#contatti">Contatti</a>
+  <a href="#form-richiesta" class="nav-cta-mobile">Richiedi Preventivo</a>
+</div>
 
 <!-- ═══ HERO ═══ -->
 <section class="hero">
@@ -1152,14 +1224,14 @@
         <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.58a1 1 0 01-.24 1.01l-2.21 2.2z"/></svg></div>
         <div>
           <div class="info-label">Telefono</div>
-          <div class="info-value">Inserisci il numero</div>
+          <div class="info-value info-value-tel">Inserisci il numero</div>
         </div>
       </div>
       <div class="info-item reveal">
         <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
         <div>
           <div class="info-label">Email</div>
-          <div class="info-value">Inserisci l'indirizzo email</div>
+          <div class="info-value info-value-email">Inserisci l'indirizzo email</div>
         </div>
       </div>
       <div class="info-item reveal">
@@ -1184,6 +1256,273 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+/* ============================================================
+   ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗
+  ██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝
+  ██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
+  ██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
+  ╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
+   ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
+  Modifica qui sotto per personalizzare il sito.
+  NON modificare nulla dopo la riga "FINE CONFIG".
+============================================================ */
+
+const CONFIG = {
+
+  /* ── AZIENDA ─────────────────────────────────────────── */
+  azienda: {
+    nome:       'Macri S.r.l.',
+    indirizzo:  'Via Traversa Parere 16',
+    citta:      '64021 Giulianova (TE)',
+    telefono:   '',                        // es. '+39 085 000 0000'
+    email:      '',                        // es. 'info@macrisrl.it'
+    piva:       '02091860672',
+    rea:        'TE-200841',
+    anno:       '2025',
+    sito_url:   'https://tuousername.github.io/macri-srl/', // aggiorna con dominio definitivo
+  },
+
+  /* ── MAPPA ───────────────────────────────────────────── */
+  mappa: {
+    lat:  42.7559,
+    lng:  13.9599,
+    zoom: 16,
+  },
+
+  /* ── FORM (Web3Forms) ────────────────────────────────── */
+  form: {
+    access_key: '821cc9de-a678-48d5-8b6b-f059d77f8900',
+    subject:    'Nuova richiesta preventivo – Macri S.r.l.',
+    from_name:  'Sito Macri S.r.l.',
+  },
+
+  /* ── COLORI ──────────────────────────────────────────── */
+  colori: {
+    blu:         '#0a2240',   // colore principale scuro (navbar, footer, hover servizi)
+    blu_medio:   '#163a6b',   // blu intermedio
+    blu_chiaro:  '#1e5aad',   // blu per icone, label form, hover
+    accento:     '#c9a84c',   // oro/dorato — bottoni, dettagli, sottolineature
+    accento_dark:'#a07828',   // oro scuro (hover bottoni)
+  },
+
+  /* ── IMMAGINI ────────────────────────────────────────── */
+  // Per usare foto locali: metti il file nella stessa cartella di index.html
+  // e scrivi solo il nome, es. 'hero.jpg'
+  // Per URL esterni: incolla l'URL completo
+  immagini: {
+    hero:          'https://images.unsplash.com/photo-1590650516494-0c8e4a4dd67e?w=1800&q=80&auto=format&fit=crop',
+    banner_mid:    'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80&auto=format&fit=crop',
+    chi_siamo:     'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80&auto=format&fit=crop',
+    form_sfondo:   'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80&auto=format&fit=crop',
+    og_preview:    'https://images.unsplash.com/photo-1590650516494-0c8e4a4dd67e?w=1200&q=80',
+
+    // Progetti (6 card) — sostituisci con i tuoi file o URL
+    progetto_1:    'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=80&auto=format&fit=crop',
+    progetto_2:    'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80&auto=format&fit=crop',
+    progetto_3:    'https://images.unsplash.com/photo-1599809275671-b5942cabc7a2?w=800&q=80&auto=format&fit=crop',
+    progetto_4:    'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80&auto=format&fit=crop',
+    progetto_5:    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80&auto=format&fit=crop',
+    progetto_6:    'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=800&q=80&auto=format&fit=crop',
+
+    // Team — sostituisci con i file delle foto delle persone, es. 'foto-mario.jpg'
+    team_1:        '',   // membro 1
+    team_2:        '',   // membro 2
+    team_3:        '',   // membro 3
+    team_4:        '',   // membro 4
+    team_gruppo:   '',   // foto di gruppo
+  },
+
+};
+
+/* ============================================================
+   FINE CONFIG — non modificare oltre questa riga
+============================================================ */
+
+  // ── Applica colori CSS ──
+  const r = document.documentElement.style;
+  r.setProperty('--blu',          CONFIG.colori.blu);
+  r.setProperty('--blu-medio',    CONFIG.colori.blu_medio);
+  r.setProperty('--blu-chiaro',   CONFIG.colori.blu_chiaro);
+  r.setProperty('--accento',      CONFIG.colori.accento);
+  r.setProperty('--accento-scuro',CONFIG.colori.accento_dark);
+
+  // ── Applica immagini sfondo ──
+  document.getElementById('heroBg').style.background =
+    `linear-gradient(to bottom, rgba(5,15,30,0.35) 0%, rgba(5,15,30,0.75) 100%), url('${CONFIG.immagini.hero}') center/cover no-repeat`;
+
+  const bannerMid = document.querySelector('.banner-mid');
+  if (bannerMid) bannerMid.style.background =
+    `linear-gradient(to right, rgba(5,15,30,0.88) 40%, rgba(5,15,30,0.4) 100%), url('${CONFIG.immagini.banner_mid}') center/cover no-repeat fixed`;
+
+  const chiImg = document.querySelector('.chi-img');
+  if (chiImg) chiImg.style.background =
+    `linear-gradient(to bottom, rgba(5,15,30,0.2), rgba(5,15,30,0.6)), url('${CONFIG.immagini.chi_siamo}') center/cover no-repeat`;
+
+  const formSfondo = document.getElementById('form-richiesta');
+  if (formSfondo) formSfondo.style.background =
+    `linear-gradient(to bottom, rgba(5,15,30,0.92), rgba(5,15,30,0.92)), url('${CONFIG.immagini.form_sfondo}') center/cover no-repeat fixed`;
+
+  // ── Applica immagini progetti ──
+  const progettiKeys = ['progetto_1','progetto_2','progetto_3','progetto_4','progetto_5','progetto_6'];
+  document.querySelectorAll('.progetto-bg').forEach((el, i) => {
+    if (CONFIG.immagini[progettiKeys[i]])
+      el.style.backgroundImage = `url('${CONFIG.immagini[progettiKeys[i]]}')`;
+  });
+
+  // ── Applica foto team ──
+  const teamKeys = ['team_1','team_2','team_3','team_4'];
+  document.querySelectorAll('.team-card:not(.wide) .team-img-placeholder').forEach((placeholder, i) => {
+    const url = CONFIG.immagini[teamKeys[i]];
+    if (url) {
+      const img = document.createElement('img');
+      img.src = url; img.className = 'team-img'; img.alt = `Membro team ${i+1}`;
+      placeholder.replaceWith(img);
+    }
+  });
+  const gruppoPlaceholder = document.querySelector('.team-card.wide .team-img-placeholder');
+  if (gruppoPlaceholder && CONFIG.immagini.team_gruppo) {
+    const img = document.createElement('img');
+    img.src = CONFIG.immagini.team_gruppo; img.className = 'team-img'; img.alt = 'Team Macri S.r.l.';
+    gruppoPlaceholder.replaceWith(img);
+  }
+
+  // ── Applica contatti ──
+  if (CONFIG.azienda.telefono) {
+    document.querySelector('.info-value-tel').innerHTML =
+      `<a href="tel:${CONFIG.azienda.telefono}" style="color:inherit;text-decoration:none">${CONFIG.azienda.telefono}</a>`;
+  }
+  if (CONFIG.azienda.email) {
+    document.querySelector('.info-value-email').innerHTML =
+      `<a href="mailto:${CONFIG.azienda.email}" style="color:inherit;text-decoration:none">${CONFIG.azienda.email}</a>`;
+  }
+
+  // ── Hamburger menu mobile ──
+  const hamburger = document.getElementById('hamburger');
+  const navMobile = document.getElementById('navMobile');
+  hamburger.addEventListener('click', () => {
+    const isOpen = hamburger.classList.toggle('open');
+    navMobile.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+  navMobile.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      navMobile.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+
+  // ── Navbar scroll ──
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ── Hero parallax & load ──
+  const heroBg = document.getElementById('heroBg');
+  setTimeout(() => heroBg.classList.add('loaded'), 100);
+  window.addEventListener('scroll', () => {
+    heroBg.style.transform = `scale(1) translateY(${window.scrollY * 0.3}px)`;
+  });
+
+  // ── Reveal on scroll ──
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) setTimeout(() => e.target.classList.add('in'), i * 60);
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // ── Mappa Leaflet/OpenStreetMap ──
+  const map = L.map('leaflet-map', { zoomControl: true, scrollWheelZoom: false })
+    .setView([CONFIG.mappa.lat, CONFIG.mappa.lng], CONFIG.mappa.zoom);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(map);
+  const icon = L.divIcon({
+    className: '',
+    html: `<div style="width:36px;height:44px;background:${CONFIG.colori.blu};border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(10,34,64,0.4)"><div style="width:13px;height:13px;background:${CONFIG.colori.accento};border-radius:50%;transform:rotate(45deg)"></div></div>`,
+    iconSize: [36,44], iconAnchor: [18,44], popupAnchor: [0,-46]
+  });
+  L.marker([CONFIG.mappa.lat, CONFIG.mappa.lng], { icon }).addTo(map)
+    .bindPopup(`<div class="map-popup-title">${CONFIG.azienda.nome}</div><div class="map-popup-addr">${CONFIG.azienda.indirizzo}<br/>${CONFIG.azienda.citta}</div><a class="map-popup-link" href="https://www.google.com/maps/dir/?api=1&destination=${CONFIG.mappa.lat},${CONFIG.mappa.lng}" target="_blank" rel="noopener">↗ Ottieni indicazioni</a>`, { maxWidth: 220 })
+    .openPopup();
+  map.once('click', () => map.scrollWheelZoom.enable());
+
+  // ── Form → Web3Forms ──
+  document.getElementById('btn-invia').addEventListener('click', async function() {
+    const nome   = document.getElementById('f-nome').value.trim();
+    const email  = document.getElementById('f-email').value.trim();
+    const tel    = document.getElementById('f-tel').value.trim();
+    const tipo   = document.getElementById('f-tipo').value;
+    const comune = document.getElementById('f-comune').value.trim();
+    const budget = document.getElementById('f-budget').value;
+    const msg    = document.getElementById('f-msg').value.trim();
+    const priv   = document.getElementById('f-privacy').checked;
+
+    ['f-nome','f-email','f-tipo','f-msg'].forEach(id => document.getElementById(id).style.borderColor = '');
+    document.getElementById('f-privacy').style.outline = '';
+
+    let ok = true;
+    if (!nome)  { document.getElementById('f-nome').style.borderColor  = '#c0392b'; ok = false; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+                { document.getElementById('f-email').style.borderColor = '#c0392b'; ok = false; }
+    if (!tipo)  { document.getElementById('f-tipo').style.borderColor  = '#c0392b'; ok = false; }
+    if (!msg)   { document.getElementById('f-msg').style.borderColor   = '#c0392b'; ok = false; }
+    if (!priv)  { document.getElementById('f-privacy').style.outline   = '2px solid #c0392b'; ok = false; }
+    if (!ok) return;
+
+    const btn = document.getElementById('btn-invia');
+    btn.innerHTML = 'Invio in corso…'; btn.disabled = true;
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          access_key: CONFIG.form.access_key,
+          subject:    CONFIG.form.subject,
+          from_name:  CONFIG.form.from_name,
+          name: nome, email: email,
+          message: [
+            `Nome: ${nome}`, `Email: ${email}`,
+            `Telefono: ${tel || 'non fornito'}`,
+            `Tipo intervento: ${tipo}`,
+            `Comune: ${comune || 'non specificato'}`,
+            `Budget: ${budget || 'non specificato'}`,
+            ``, `Descrizione:`, msg
+          ].join('\n')
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('form-fields').style.display = 'none';
+        document.getElementById('form-success').classList.add('show');
+      } else { throw new Error(); }
+    } catch(err) {
+      btn.innerHTML = 'Invia richiesta <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+      btn.disabled = false;
+      alert('Errore durante l\'invio. Riprova o contattaci direttamente per email.');
+    }
+  });
+</script>
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = hamburger.classList.toggle('open');
+    navMobile.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+
+  // Chiudi menu al click su un link
+  navMobile.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      navMobile.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+
   // ── Navbar scroll ──
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
