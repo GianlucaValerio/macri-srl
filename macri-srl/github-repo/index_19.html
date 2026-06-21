@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Macri S.r.l. – Costruzioni Giulianova</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blu:        #0a2240;
+      --blu-medio:  #163a6b;
+      --blu-chiaro: #1e5aad;
+      --accento:    #41b678;
+      --accento-scuro: #2e8a58;
+      --bianco:     #ffffff;
+      --grigio-bg:  #f4f4f2;
+      --testo:      #111827;
+      --testo-soft: #4b5563;
+      --bordo:      #e2e0db;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bianco); color: var(--testo); overflow-x: hidden; }
+
+    /* ─────────── NAV ─────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5rem;
+      height: 72px;
+      transition: background 0.4s, box-shadow 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(10,34,64,0.97);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 2px 24px rgba(0,0,0,0.25);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem; font-weight: 700;
+      color: var(--bianco);
+      letter-spacing: 0.05em;
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo-badge {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accento);
+      border: 1px solid var(--accento);
+      padding: 3px 8px;
+    }
+    nav ul { list-style: none; display: flex; gap: 2.2rem; align-items: center; }
+    nav ul a {
+      text-decoration: none; color: rgba(255,255,255,0.82);
+      font-size: 0.8rem; font-weight: 400;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    nav ul a:hover { color: var(--accento); }
+    .nav-cta {
+      background: var(--accento) !important; color: var(--blu) !important;
+      padding: 0.5rem 1.4rem; font-weight: 500 !important;
+      letter-spacing: 0.1em !important;
+    }
+    .nav-cta:hover { background: var(--accento-scuro) !important; color: var(--bianco) !important; }
+
+    /* ─────────── HERO ─────────── */
+    .hero {
+      position: relative; height: 100vh; min-height: 620px;
+      display: flex; align-items: flex-end;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        linear-gradient(to bottom, rgba(5,15,30,0.35) 0%, rgba(5,15,30,0.75) 100%),
+        url('https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1800&q=80&auto=format&fit=crop') center/cover no-repeat;
+      /* 🔁 Sostituisci l'URL sopra con la tua foto hero */
+      transform: scale(1.04);
+      transition: transform 8s ease;
+    }
+    .hero-bg.loaded { transform: scale(1); }
+    .hero-content {
+      position: relative; z-index: 1;
+      padding: 0 6rem 7rem;
+      max-width: 820px;
+    }
+    .hero-eyebrow {
+      font-size: 0.72rem; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--accento); margin-bottom: 1.4rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block;
+      width: 40px; height: 1px; background: var(--accento);
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 6vw, 6rem);
+      font-weight: 900; color: var(--bianco);
+      line-height: 1.02; margin-bottom: 1.6rem;
+    }
+    .hero-title em { font-style: italic; color: var(--accento); }
+    .hero-sub {
+      font-size: 1.05rem; color: rgba(255,255,255,0.72);
+      line-height: 1.75; max-width: 500px;
+      margin-bottom: 3rem; font-weight: 300;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-gold {
+      display: inline-block; padding: 1rem 2.4rem;
+      background: var(--accento); color: var(--blu);
+      font-weight: 500; font-size: 0.82rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.22s, transform 0.18s;
+    }
+    .btn-gold:hover { background: var(--accento-scuro); color: var(--bianco); transform: translateY(-2px); }
+    .btn-outline-white {
+      display: inline-block; padding: 1rem 2.4rem;
+      border: 1.5px solid rgba(255,255,255,0.45); color: rgba(255,255,255,0.9);
+      font-weight: 400; font-size: 0.82rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-outline-white:hover { border-color: var(--accento); color: var(--accento); }
+
+    /* scroll indicator */
+    .hero-scroll {
+      position: absolute; bottom: 2.5rem; right: 5rem; z-index: 1;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .hero-scroll span {
+      font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(255,255,255,0.5); writing-mode: vertical-rl;
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--accento), transparent);
+      animation: scrollLine 2s ease infinite;
+    }
+    @keyframes scrollLine { 0%,100%{opacity:1;transform:scaleY(1)} 50%{opacity:0.4;transform:scaleY(0.5)} }
+
+    /* ─────────── STATS ─────────── */
+    .stats {
+      background: var(--blu);
+      display: grid; grid-template-columns: repeat(3,1fr);
+    }
+    .stat {
+      padding: 2.4rem 2rem; text-align: center;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      position: relative;
+    }
+    .stat::after {
+      content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 0; height: 2px; background: var(--accento);
+      transition: width 0.4s;
+    }
+    .stat:hover::after { width: 60%; }
+    .stat:last-child { border-right: none; }
+    .stat-n {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem; font-weight: 700;
+      color: var(--bianco); line-height: 1.1;
+    }
+    .stat-n span { color: var(--accento); }
+    .stat-label {
+      font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: rgba(255,255,255,0.4); margin-top: 0.4rem;
+    }
+
+    /* ─────────── SHARED ─────────── */
+    .section-tag {
+      font-size: 0.68rem; letter-spacing: 0.24em; text-transform: uppercase;
+      color: var(--accento); margin-bottom: 0.8rem;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .section-tag::before {
+      content: ''; display: block;
+      width: 28px; height: 1px; background: var(--accento);
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3.2vw, 3rem);
+      font-weight: 700; line-height: 1.15;
+      margin-bottom: 1.2rem;
+    }
+    .section-body {
+      font-size: 1rem; line-height: 1.85;
+      color: var(--testo-soft); font-weight: 300;
+    }
+
+    /* ─────────── SERVIZI ─────────── */
+    #servizi { padding: 7rem 5rem; background: var(--grigio-bg); }
+    .servizi-header { max-width: 560px; margin-bottom: 4rem; }
+    .servizi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--bordo); }
+    .servizio {
+      background: var(--bianco); padding: 3rem 2.5rem;
+      transition: background 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .servizio::before {
+      content: ''; position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px; background: var(--accento);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.35s;
+    }
+    .servizio:hover { background: var(--blu); }
+    .servizio:hover::before { transform: scaleX(1); }
+    .servizio:hover .srv-title { color: var(--bianco); }
+    .servizio:hover .srv-desc  { color: rgba(255,255,255,0.55); }
+    .servizio:hover .srv-num   { color: rgba(255,255,255,0.07); }
+    .srv-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 5rem; font-weight: 900;
+      color: #eee; line-height: 1;
+      margin-bottom: 0.5rem;
+      transition: color 0.25s;
+    }
+    .srv-icon { width: 42px; height: 42px; margin-bottom: 1.2rem; }
+    .srv-title { font-size: 1.15rem; font-weight: 500; color: var(--testo); margin-bottom: 0.7rem; transition: color 0.25s; }
+    .srv-desc { font-size: 0.88rem; color: var(--testo-soft); line-height: 1.75; font-weight: 300; transition: color 0.25s; }
+
+    /* ─────────── PROGETTI ─────────── */
+    #progetti { padding: 7rem 5rem; background: var(--bianco); }
+    .progetti-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 4rem; gap: 2rem;
+    }
+    .progetti-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+
+    .progetto-card {
+      position: relative; overflow: hidden;
+      aspect-ratio: 4/3;
+      cursor: pointer;
+      background: var(--blu);
+    }
+    .progetto-card:first-child {
+      grid-column: span 2;
+      aspect-ratio: auto;
+      min-height: 420px;
+    }
+    .progetto-bg {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      transition: transform 0.6s ease;
+    }
+    .progetto-card:hover .progetto-bg { transform: scale(1.06); }
+    .progetto-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(5,15,35,0.88) 0%, rgba(5,15,35,0.1) 60%);
+      transition: background 0.4s;
+    }
+    .progetto-card:hover .progetto-overlay {
+      background: linear-gradient(to top, rgba(5,15,35,0.95) 0%, rgba(5,15,35,0.35) 60%);
+    }
+    .progetto-body {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 2rem;
+      transform: translateY(0);
+    }
+    .progetto-tag {
+      display: inline-block; font-size: 0.62rem;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      background: var(--accento); color: var(--blu);
+      padding: 3px 10px; margin-bottom: 0.7rem;
+      font-weight: 600;
+    }
+    .progetto-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; font-weight: 700;
+      color: var(--bianco); line-height: 1.25; margin-bottom: 0.5rem;
+    }
+    .progetto-card:first-child .progetto-title { font-size: 1.8rem; }
+    .progetto-desc {
+      font-size: 0.85rem; color: rgba(255,255,255,0.7);
+      line-height: 1.65; font-weight: 300;
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.4s;
+      opacity: 0;
+    }
+    .progetto-card:hover .progetto-desc { max-height: 100px; opacity: 1; }
+    .progetto-meta {
+      display: flex; gap: 1.2rem; margin-top: 0.8rem;
+      font-size: 0.72rem; color: rgba(255,255,255,0.5);
+    }
+    .progetto-meta strong { color: var(--accento); }
+
+    /* foto placeholder per progetti */
+    .progetto-ph {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 0.7rem;
+      background: linear-gradient(135deg, #0a2240 0%, #163a6b 100%);
+    }
+    .progetto-ph svg { opacity: 0.35; }
+    .progetto-ph span {
+      font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(201,168,76,0.5);
+    }
+
+    /* ─────────── BANNER INTERMEDIO ─────────── */
+    .banner-mid {
+      position: relative; padding: 8rem 5rem;
+      overflow: hidden;
+      background:
+        linear-gradient(to right, rgba(5,15,30,0.88) 40%, rgba(5,15,30,0.4) 100%),
+        url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1600&q=80&auto=format&fit=crop') center/cover no-repeat fixed;
+      /* 🔁 Sostituisci l'URL con una tua foto cantiere */
+    }
+    .banner-mid-content { max-width: 560px; }
+    .banner-mid .section-title { color: var(--bianco); }
+    .banner-mid .section-body  { color: rgba(255,255,255,0.65); max-width: 440px; margin-bottom: 2rem; }
+
+    /* ─────────── TEAM ─────────── */
+    #team { padding: 7rem 5rem; background: var(--grigio-bg); }
+    .team-header { max-width: 560px; margin-bottom: 4rem; }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 1.5rem;
+    }
+    .team-card {
+      background: var(--bianco);
+      border: 1px solid var(--bordo);
+      overflow: hidden;
+      transition: box-shadow 0.3s, transform 0.25s;
+    }
+    .team-card:hover { box-shadow: 0 12px 40px rgba(10,34,64,0.12); transform: translateY(-5px); }
+    .team-img {
+      width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block;
+    }
+    .team-img-placeholder {
+      width: 100%; aspect-ratio: 1/1;
+      background: linear-gradient(135deg, var(--blu) 0%, var(--blu-medio) 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem;
+    }
+    .team-avatar-icon {
+      width: 72px; height: 72px; border-radius: 50%;
+      border: 2px solid rgba(201,168,76,0.35);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .team-avatar-icon svg { width: 36px; height: 36px; fill: rgba(255,255,255,0.25); }
+    .team-img-placeholder span {
+      font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+    }
+    .team-body { padding: 1.3rem 1.2rem 1.5rem; }
+    .team-nome {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; font-weight: 700; color: var(--testo); margin-bottom: 0.25rem;
+    }
+    .team-ruolo {
+      font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accento); font-weight: 500;
+    }
+
+    /* card gruppo wide */
+    .team-card.wide {
+      grid-column: span 2;
+      display: grid; grid-template-columns: 1fr 1fr;
+    }
+    .team-card.wide .team-img-placeholder { aspect-ratio: auto; height: 100%; min-height: 220px; }
+    .team-card.wide .team-body { padding: 2.2rem; display: flex; flex-direction: column; justify-content: center; }
+    .team-card.wide .team-nome { font-size: 1.3rem; margin-bottom: 0.4rem; }
+    .team-card.wide .team-desc { font-size: 0.87rem; color: var(--testo-soft); line-height: 1.7; margin-top: 0.8rem; font-weight: 300; }
+
+    /* ─────────── CHI SIAMO ─────────── */
+    #chi-siamo {
+      padding: 7rem 5rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6rem;
+      align-items: center; background: var(--bianco);
+    }
+    .timeline { margin-top: 2.5rem; }
+    .tl-item { display: flex; gap: 1.5rem; padding-bottom: 2.2rem; position: relative; }
+    .tl-item:not(:last-child)::after {
+      content: ''; position: absolute;
+      left: 5px; top: 14px; bottom: 0;
+      width: 1px; background: var(--bordo);
+    }
+    .tl-dot {
+      width: 11px; height: 11px; border-radius: 50%;
+      background: var(--accento); flex-shrink: 0;
+      margin-top: 4px; position: relative; z-index: 1;
+    }
+    .tl-year { font-size: 0.68rem; letter-spacing: 0.15em; color: var(--accento); text-transform: uppercase; margin-bottom: 0.3rem; font-weight: 500; }
+    .tl-text { font-size: 0.88rem; color: var(--testo-soft); line-height: 1.7; font-weight: 300; }
+
+    /* immagine laterale chi siamo */
+    .chi-img-wrap {
+      position: relative;
+    }
+    .chi-img {
+      width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block;
+      /* 🔁 Sostituisci con <img> reale */
+      background:
+        linear-gradient(to bottom, rgba(5,15,30,0.2), rgba(5,15,30,0.6)),
+        url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80&auto=format&fit=crop') center/cover no-repeat;
+    }
+    .chi-img-badge {
+      position: absolute; bottom: 2.5rem; left: -2rem;
+      background: var(--accento); color: var(--blu);
+      padding: 1.2rem 1.8rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    .chi-img-badge .big { font-family: 'Playfair Display', serif; font-size: 2.8rem; font-weight: 900; line-height: 1; display: block; }
+    .chi-img-badge .small { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500; }
+    .chi-img-accent {
+      position: absolute; top: -1.5rem; right: -1.5rem;
+      width: 100px; height: 100px;
+      border: 2px solid var(--accento); opacity: 0.35;
+    }
+
+    /* ─────────── FORM RICHIESTA ─────────── */
+    #form-richiesta {
+      position: relative; overflow: hidden;
+      background:
+        linear-gradient(to bottom, rgba(5,15,30,0.92), rgba(5,15,30,0.92)),
+        url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80&auto=format&fit=crop') center/cover no-repeat fixed;
+      /* 🔁 Sostituisci l'URL con una tua foto */
+      padding: 7rem 5rem;
+    }
+    #form-richiesta .section-tag { color: var(--accento); }
+    #form-richiesta .section-title { color: var(--bianco); }
+    #form-richiesta .section-body  { color: rgba(255,255,255,0.55); margin-bottom: 3rem; }
+
+    .form-wrap {
+      background: var(--bianco);
+      padding: 3rem 3.5rem;
+    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.45rem; }
+    .form-group.full { grid-column: span 2; }
+    .form-label { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blu-chiaro); font-weight: 500; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; padding: 0.85rem 1rem;
+      border: 1.5px solid var(--bordo);
+      font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
+      color: var(--testo); background: var(--bianco);
+      transition: border-color 0.2s, box-shadow 0.2s; outline: none; appearance: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--accento);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: #b0bac9; }
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234b5563' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; cursor: pointer;
+    }
+    .form-textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
+    .form-privacy { grid-column: span 2; display: flex; align-items: flex-start; gap: 0.75rem; }
+    .form-privacy input[type="checkbox"] { margin-top: 3px; accent-color: var(--accento); flex-shrink: 0; width: 16px; height: 16px; cursor: pointer; }
+    .form-privacy label { font-size: 0.8rem; color: var(--testo-soft); line-height: 1.55; cursor: pointer; }
+    .form-submit { grid-column: span 2; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .btn-submit {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 1rem 2.6rem;
+      background: var(--blu); color: var(--bianco);
+      font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      border: none; cursor: pointer;
+      transition: background 0.22s, transform 0.18s;
+    }
+    .btn-submit:hover { background: var(--accento); color: var(--blu); transform: translateY(-2px); }
+    .btn-submit svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+    .form-note { font-size: 0.78rem; color: #9ca3af; }
+    .form-success { display: none; text-align: center; padding: 3rem 2rem; }
+    .form-success.show { display: block; }
+    .success-icon { width: 60px; height: 60px; border-radius: 50%; background: #e8f5ee; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; }
+    .success-icon svg { width: 28px; height: 28px; stroke: #2e7d4f; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .form-success h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--testo); margin-bottom: 0.5rem; }
+    .form-success p  { font-size: 0.9rem; color: var(--testo-soft); }
+
+    /* ─────────── CONTATTI ─────────── */
+    #contatti { padding: 7rem 5rem; background: var(--grigio-bg); }
+    .contatti-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; margin-top: 3rem; align-items: start; }
+    .info-item { display: flex; gap: 1.2rem; align-items: flex-start; padding: 1.3rem 0; border-bottom: 1px solid var(--bordo); }
+    .info-icon { width: 40px; height: 40px; background: var(--blu); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .info-icon svg { width: 18px; height: 18px; fill: var(--accento); }
+    .info-label { font-size: 0.65rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accento); margin-bottom: 0.3rem; font-weight: 500; }
+    .info-value { font-size: 0.93rem; color: var(--testo); line-height: 1.55; }
+
+    .map-box { border: 1px solid var(--bordo); height: 380px; overflow: hidden; position: relative; }
+    #leaflet-map { width: 100%; height: 100%; z-index: 1; }
+    .leaflet-popup-content-wrapper { font-family: 'DM Sans', sans-serif !important; border-radius: 0 !important; box-shadow: 0 4px 20px rgba(10,34,64,0.18) !important; }
+    .leaflet-popup-content { margin: 14px 18px !important; }
+    .map-popup-title { font-weight: 600; font-size: 0.9rem; color: #0a2240; margin-bottom: 4px; }
+    .map-popup-addr  { font-size: 0.8rem; color: #4b5563; line-height: 1.5; }
+    .map-popup-link  { display: inline-block; margin-top: 8px; font-size: 0.75rem; color: #1e5aad; text-decoration: none; font-weight: 500; }
+    .map-popup-link:hover { text-decoration: underline; }
+
+    /* ─────────── FOOTER ─────────── */
+    footer {
+      background: #050f1e;
+      color: rgba(255,255,255,0.35);
+      padding: 2.5rem 5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.78rem;
+    }
+    footer strong { font-family: 'Playfair Display', serif; color: var(--bianco); font-size: 1rem; }
+    footer a { color: var(--accento); text-decoration: none; }
+
+    /* ─────────── REVEAL ─────────── */
+    .reveal { opacity:0; transform:translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.in { opacity:1; transform:none; }
+
+    /* ─────────── CERTIFICAZIONI ─────────── */
+    #certificazioni { padding: 7rem 5rem; background: var(--blu); }
+    #certificazioni .section-tag  { color: var(--accento); }
+    #certificazioni .section-title { color: var(--bianco); }
+    #certificazioni .section-body  { color: rgba(255,255,255,0.55); margin-bottom: 3.5rem; }
+
+    .cert-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .cert-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 2.5rem 2rem 2rem;
+      display: flex; flex-direction: column;
+      transition: background 0.3s, border-color 0.3s, transform 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .cert-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: var(--accento);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.35s;
+    }
+    .cert-card:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(201,168,76,0.35);
+      transform: translateY(-4px);
+    }
+    .cert-card:hover::before { transform: scaleX(1); }
+
+    .cert-icon {
+      width: 52px; height: 52px;
+      background: rgba(201,168,76,0.12);
+      border: 1px solid rgba(201,168,76,0.3);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.5rem; flex-shrink: 0;
+    }
+    .cert-icon svg { width: 26px; height: 26px; fill: var(--accento); }
+
+    .cert-sigla {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-weight: 900;
+      color: var(--accento); line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .cert-nome {
+      font-size: 0.95rem; font-weight: 500;
+      color: var(--bianco); margin-bottom: 0.7rem;
+      line-height: 1.3;
+    }
+    .cert-desc {
+      font-size: 0.83rem; color: rgba(255,255,255,0.45);
+      line-height: 1.7; font-weight: 300;
+      flex-grow: 1; margin-bottom: 1.8rem;
+    }
+    .cert-footer {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding-top: 1.2rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .cert-scadenza {
+      font-size: 0.68rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: rgba(255,255,255,0.3);
+    }
+    .cert-scadenza strong { color: rgba(255,255,255,0.6); display: block; font-size: 0.78rem; letter-spacing: 0; margin-top: 1px; }
+
+    /* Bottone scarica PDF */
+    .cert-link {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.55rem 1.1rem;
+      background: var(--accento); color: var(--blu);
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .cert-link:hover { background: var(--accento-scuro); color: var(--bianco); }
+    .cert-link svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* Badge "in caricamento" quando il PDF non è ancora collegato */
+    .cert-link.pending {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.35);
+      cursor: default; pointer-events: none;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* ─────────── HAMBURGER & MENU MOBILE ─────────── */
+    .hamburger {
+      display: none;
+      flex-direction: column; justify-content: center; align-items: center;
+      gap: 5px; width: 40px; height: 40px;
+      background: none; border: none; cursor: pointer; padding: 4px;
+      z-index: 300;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: var(--bianco);
+      transition: transform 0.3s, opacity 0.3s, width 0.3s;
+      transform-origin: center;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; width: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .nav-mobile {
+      display: none;
+      position: fixed; top: 72px; left: 0; right: 0; bottom: 0;
+      background: rgba(5, 15, 30, 0.98);
+      backdrop-filter: blur(12px);
+      z-index: 150;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 0;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .nav-mobile.open {
+      opacity: 1; pointer-events: all;
+    }
+    .nav-mobile a {
+      display: block; width: 100%;
+      text-align: center;
+      text-decoration: none;
+      color: rgba(255,255,255,0.75);
+      font-size: 1.1rem; font-weight: 400;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 1.1rem 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-mobile a:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+    .nav-mobile a:hover { color: var(--accento); background: rgba(255,255,255,0.03); }
+    .nav-mobile .nav-cta-mobile {
+      margin: 1.5rem 2rem 0;
+      display: block; width: calc(100% - 4rem);
+      text-align: center;
+      padding: 1rem 2rem;
+      background: var(--accento); color: var(--blu) !important;
+      font-weight: 500 !important; font-size: 0.9rem !important;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      text-decoration: none; border: none;
+    }
+
+    /* ─────────── RESPONSIVE ─────────── */
+    @media (max-width: 960px) {
+      nav { padding: 0 1.5rem; }
+      nav ul { display: none; }
+      .hamburger { display: flex; }
+      .nav-mobile { display: flex; }
+      .hero-content { padding: 0 1.5rem 5rem; }
+      .hero-scroll { display: none; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      #servizi, #progetti, #team, #chi-siamo, #form-richiesta, #contatti { padding: 4rem 1.5rem; }
+      .servizi-grid { grid-template-columns: 1fr; background: none; gap: 1px; }
+      .progetti-grid { grid-template-columns: 1fr; }
+      .progetto-card:first-child { grid-column: span 1; min-height: 280px; }
+      .progetti-header { flex-direction: column; align-items: flex-start; }
+      .team-grid { grid-template-columns: 1fr 1fr; }
+      .team-card.wide { grid-column: span 2; grid-template-columns: 1fr; }
+      .team-card.wide .team-img-placeholder { min-height: 180px; }
+      #chi-siamo { grid-template-columns: 1fr; gap: 3rem; }
+      .chi-img-badge { left: 1rem; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full, .form-privacy, .form-submit { grid-column: span 1; }
+      .form-wrap { padding: 1.5rem; }
+      .cert-grid { grid-template-columns: 1fr; }
+      .contatti-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <svg width="38" height="38" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+      <!-- Ingranaggio semplice: cerchio esterno con denti rettangolari -->
+      <!-- Denti: 8 denti uniformi ottenuti ruotando un rettangolo -->
+      <g fill="white">
+        <rect x="17.5" y="0"  width="5" height="7" rx="1.5"/>
+        <rect x="17.5" y="33" width="5" height="7" rx="1.5"/>
+        <rect x="0"  y="17.5" width="7" height="5" rx="1.5"/>
+        <rect x="33" y="17.5" width="7" height="5" rx="1.5"/>
+        <rect x="3.5" y="3.5" width="5" height="7" rx="1.5" transform="rotate(45 6 7)"/>
+        <rect x="28"  y="3.5" width="5" height="7" rx="1.5" transform="rotate(-45 30.5 7)"/>
+        <rect x="3.5" y="29"  width="5" height="7" rx="1.5" transform="rotate(-45 6 33)"/>
+        <rect x="28"  y="29"  width="5" height="7" rx="1.5" transform="rotate(45 30.5 33)"/>
+      </g>
+      <!-- Cerchio corpo ingranaggio -->
+      <circle cx="20" cy="20" r="14" fill="white"/>
+      <!-- Foro centrale -->
+      <circle cx="20" cy="20" r="6" fill="#0a2240"/>
+      <!-- Casa stilizzata: prisma semplice — tetto triangolare + rettangolo corpo, nessun dettaglio -->
+      <polygon points="20,9 28,16 12,16" fill="#0a2240"/>
+      <rect x="13" y="16" width="14" height="9" fill="#0a2240"/>
+    </svg>
+    <span style="display:flex;flex-direction:column;line-height:1.15;gap:0">
+      <span style="display:flex;align-items:baseline;gap:4px">
+        <span style="font-family:'DM Sans',sans-serif;font-size:1.2rem;font-weight:700;color:#fff;letter-spacing:0.05em">MACRI</span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:300;color:rgba(255,255,255,0.6);letter-spacing:0.06em">SRL</span>
+      </span>
+      <span style="font-family:'DM Sans',sans-serif;font-size:0.52rem;font-weight:300;color:rgba(255,255,255,0.45);letter-spacing:0.22em;text-transform:uppercase">Costruzioni</span>
+    </span>
+  </a>
+  <ul>
+    <li><a href="#servizi">Servizi</a></li>
+    <li><a href="#progetti">Progetti</a></li>
+    <li><a href="#certificazioni">Certificazioni</a></li>
+    <li><a href="#chi-siamo">Chi Siamo</a></li>
+    <li><a href="#contatti">Contatti</a></li>
+    <li><a href="#form-richiesta" class="nav-cta">Richiedi Preventivo</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Apri menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Menu mobile -->
+<div class="nav-mobile" id="navMobile">
+  <a href="#servizi">Servizi</a>
+  <a href="#progetti">Progetti</a>
+  <a href="#certificazioni">Certificazioni</a>
+  <a href="#chi-siamo">Chi Siamo</a>
+  <a href="#contatti">Contatti</a>
+  <a href="#form-richiesta" class="nav-cta-mobile">Richiedi Preventivo</a>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Costruzioni · Giulianova · Teramo</p>
+    <h1 class="hero-title">
+      Costruiamo<br />
+      <em>il futuro</em><br />
+      con solidità
+    </h1>
+    <p class="hero-sub">
+      Dal 2021 realizziamo edifici residenziali e non residenziali con esperienza,
+      precisione e rispetto per il territorio abruzzese.
+    </p>
+    <div class="hero-actions">
+      <a href="#progetti" class="btn-gold">Scopri i progetti</a>
+      <a href="#form-richiesta" class="btn-outline-white">Richiedi un preventivo</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scorri</span>
+  </div>
+</section>
+
+<!-- ═══ STATS ═══ -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-n">2021</div>
+    <div class="stat-label">Anno di fondazione</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">9</div>
+    <div class="stat-label">Professionisti</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">ATECO<br /><span style="font-size:1.8rem">41.2</span></div>
+    <div class="stat-label">Settore edile</div>
+  </div>
+</div>
+
+<!-- ═══ SERVIZI ═══ -->
+<section id="servizi">
+  <div class="servizi-header">
+    <p class="section-tag reveal">Cosa facciamo</p>
+    <h2 class="section-title reveal">Competenza in ogni fase del cantiere</h2>
+    <p class="section-body reveal">Dalla progettazione alla consegna delle chiavi, Macri S.r.l. garantisce qualità, sicurezza e rispetto dei tempi.</p>
+  </div>
+  <div class="servizi-grid">
+    <div class="servizio reveal">
+      <div class="srv-num">01</div>
+      <svg class="srv-icon" viewBox="0 0 48 48" fill="none">
+        <rect x="8" y="20" width="32" height="24" rx="1" stroke="#1e5aad" stroke-width="2"/>
+        <path d="M4 22L24 6L44 22" stroke="#1e5aad" stroke-width="2" stroke-linecap="round"/>
+        <rect x="18" y="30" width="12" height="14" stroke="#1e5aad" stroke-width="1.5"/>
+      </svg>
+      <div class="srv-title">Edifici Residenziali</div>
+      <div class="srv-desc">Abitazioni private, condomini e complessi residenziali realizzati con attenzione al dettaglio architettonico e all'efficienza energetica.</div>
+    </div>
+    <div class="servizio reveal">
+      <div class="srv-num">02</div>
+      <svg class="srv-icon" viewBox="0 0 48 48" fill="none">
+        <rect x="6" y="16" width="36" height="28" rx="1" stroke="#1e5aad" stroke-width="2"/>
+        <rect x="12" y="24" width="8" height="8" stroke="#1e5aad" stroke-width="1.5"/>
+        <rect x="28" y="24" width="8" height="8" stroke="#1e5aad" stroke-width="1.5"/>
+        <path d="M6 16L24 4L42 16" stroke="#1e5aad" stroke-width="2"/>
+      </svg>
+      <div class="srv-title">Edifici Non Residenziali</div>
+      <div class="srv-desc">Spazi commerciali, capannoni industriali, strutture ricettive e uffici progettati e costruiti su misura per le esigenze del cliente.</div>
+    </div>
+    <div class="servizio reveal">
+      <div class="srv-num">03</div>
+      <svg class="srv-icon" viewBox="0 0 48 48" fill="none">
+        <rect x="8" y="8" width="32" height="32" rx="1" stroke="#1e5aad" stroke-width="2"/>
+        <path d="M16 28L20 24L24 28L32 20" stroke="#1e5aad" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="34" cy="34" r="8" fill="#f4f4f2" stroke="#1e5aad" stroke-width="1.5"/>
+        <path d="M31 34h6M34 31v6" stroke="#1e5aad" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div class="srv-title">Ristrutturazioni</div>
+      <div class="srv-desc">Interventi ordinari e straordinari con soluzioni personalizzate per valorizzare e modernizzare ogni tipo di immobile esistente.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROGETTI ═══ -->
+<section id="progetti">
+  <div class="progetti-header">
+    <div>
+      <p class="section-tag reveal">I nostri lavori</p>
+      <h2 class="section-title reveal" style="margin-bottom:0">Progetti realizzati</h2>
+    </div>
+    <p class="section-body reveal" style="max-width:340px;font-size:0.9rem;">
+      Ogni cantiere è una storia di impegno. Una selezione dei nostri interventi più significativi nel territorio abruzzese.
+    </p>
+  </div>
+  <div class="progetti-grid">
+
+    <!-- CARD 1 – grande (span 2)
+         Per aggiungere foto: sostituisci .progetto-ph con style="background-image:url('foto.jpg')" sul .progetto-bg -->
+    <div class="progetto-card reveal">
+      <div class="progetto-bg">
+        <div class="progetto-ph">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="8" width="40" height="32" rx="2" stroke="#41b678" stroke-width="1.5"/><circle cx="16" cy="20" r="4" stroke="#41b678" stroke-width="1.5"/><path d="M4 36l10-10 8 8 6-6 16 8" stroke="#41b678" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Aggiungi foto</span>
+        </div>
+      </div>
+      <div class="progetto-overlay"></div>
+      <div class="progetto-body">
+        <span class="progetto-tag">Residenziale</span>
+        <div class="progetto-title">Nome del progetto</div>
+        <div class="progetto-desc">Descrizione del progetto: tipologia, caratteristiche principali e risultati raggiunti.</div>
+        <div class="progetto-meta">
+          <span><strong>Anno:</strong> 20XX</span>
+          <span><strong>Luogo:</strong> Comune (TE)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 2 -->
+    <div class="progetto-card reveal">
+      <div class="progetto-bg">
+        <div class="progetto-ph">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="8" width="40" height="32" rx="2" stroke="#41b678" stroke-width="1.5"/><circle cx="16" cy="20" r="4" stroke="#41b678" stroke-width="1.5"/><path d="M4 36l10-10 8 8 6-6 16 8" stroke="#41b678" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Aggiungi foto</span>
+        </div>
+      </div>
+      <div class="progetto-overlay"></div>
+      <div class="progetto-body">
+        <span class="progetto-tag">Commerciale</span>
+        <div class="progetto-title">Nome del progetto</div>
+        <div class="progetto-desc">Descrizione del progetto.</div>
+        <div class="progetto-meta">
+          <span><strong>Anno:</strong> 20XX</span>
+          <span><strong>Luogo:</strong> Comune (TE)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 3 -->
+    <div class="progetto-card reveal">
+      <div class="progetto-bg">
+        <div class="progetto-ph">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="8" width="40" height="32" rx="2" stroke="#41b678" stroke-width="1.5"/><circle cx="16" cy="20" r="4" stroke="#41b678" stroke-width="1.5"/><path d="M4 36l10-10 8 8 6-6 16 8" stroke="#41b678" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Aggiungi foto</span>
+        </div>
+      </div>
+      <div class="progetto-overlay"></div>
+      <div class="progetto-body">
+        <span class="progetto-tag">Ristrutturazione</span>
+        <div class="progetto-title">Nome del progetto</div>
+        <div class="progetto-desc">Descrizione del progetto.</div>
+        <div class="progetto-meta">
+          <span><strong>Anno:</strong> 20XX</span>
+          <span><strong>Luogo:</strong> Comune (TE)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 4 -->
+    <div class="progetto-card reveal">
+      <div class="progetto-bg">
+        <div class="progetto-ph">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="8" width="40" height="32" rx="2" stroke="#41b678" stroke-width="1.5"/><circle cx="16" cy="20" r="4" stroke="#41b678" stroke-width="1.5"/><path d="M4 36l10-10 8 8 6-6 16 8" stroke="#41b678" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Aggiungi foto</span>
+        </div>
+      </div>
+      <div class="progetto-overlay"></div>
+      <div class="progetto-body">
+        <span class="progetto-tag">Residenziale</span>
+        <div class="progetto-title">Nome del progetto</div>
+        <div class="progetto-desc">Descrizione del progetto.</div>
+        <div class="progetto-meta">
+          <span><strong>Anno:</strong> 20XX</span>
+          <span><strong>Luogo:</strong> Comune (TE)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 5 -->
+    <div class="progetto-card reveal">
+      <div class="progetto-bg">
+        <div class="progetto-ph">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="8" width="40" height="32" rx="2" stroke="#41b678" stroke-width="1.5"/><circle cx="16" cy="20" r="4" stroke="#41b678" stroke-width="1.5"/><path d="M4 36l10-10 8 8 6-6 16 8" stroke="#41b678" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Aggiungi foto</span>
+        </div>
+      </div>
+      <div class="progetto-overlay"></div>
+      <div class="progetto-body">
+        <span class="progetto-tag">Industriale</span>
+        <div class="progetto-title">Nome del progetto</div>
+        <div class="progetto-desc">Descrizione del progetto.</div>
+        <div class="progetto-meta">
+          <span><strong>Anno:</strong> 20XX</span>
+          <span><strong>Luogo:</strong> Comune (TE)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 6 -->
+    <div class="progetto-card reveal">
+      <div class="progetto-bg">
+        <div class="progetto-ph">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="8" width="40" height="32" rx="2" stroke="#41b678" stroke-width="1.5"/><circle cx="16" cy="20" r="4" stroke="#41b678" stroke-width="1.5"/><path d="M4 36l10-10 8 8 6-6 16 8" stroke="#41b678" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Aggiungi foto</span>
+        </div>
+      </div>
+      <div class="progetto-overlay"></div>
+      <div class="progetto-body">
+        <span class="progetto-tag">Ristrutturazione</span>
+        <div class="progetto-title">Nome del progetto</div>
+        <div class="progetto-desc">Descrizione del progetto.</div>
+        <div class="progetto-meta">
+          <span><strong>Anno:</strong> 20XX</span>
+          <span><strong>Luogo:</strong> Comune (TE)</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ BANNER INTERMEDIO ═══ -->
+<div class="banner-mid">
+  <div class="banner-mid-content">
+    <p class="section-tag reveal" style="color:var(--accento)">La nostra promessa</p>
+    <h2 class="section-title reveal">Qualità, sicurezza e rispetto dei tempi — sempre.</h2>
+    <p class="section-body reveal">
+      Ogni progetto viene seguito con la stessa cura, dal primo sopralluogo alla consegna delle chiavi.
+      Siamo una squadra di 9 professionisti al servizio del vostro futuro.
+    </p>
+    <a href="#form-richiesta" class="btn-gold reveal">Parlaci del tuo progetto</a>
+  </div>
+</div>
+
+<!-- ═══ TEAM ═══ (nascosto — rimuovere style="display:none" per riattivare e aggiungere link in navbar) -->
+<section id="team" style="display:none">
+  <div class="team-header">
+    <p class="section-tag reveal">Le persone</p>
+    <h2 class="section-title reveal">Il nostro team</h2>
+    <p class="section-body reveal">Professionisti del settore edile uniti da passione per il lavoro ben fatto e rispetto per il cliente.</p>
+  </div>
+  <div class="team-grid">
+
+    <!-- CARD 1 – sostituisci .team-img-placeholder con <img class="team-img" src="foto.jpg" alt="Nome"> -->
+    <div class="team-card reveal">
+      <div class="team-img-placeholder">
+        <div class="team-avatar-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>
+        <span>Aggiungi foto</span>
+      </div>
+      <div class="team-body">
+        <div class="team-nome">Nome Cognome</div>
+        <div class="team-ruolo">Titolare / Direttore</div>
+      </div>
+    </div>
+
+    <!-- CARD 2 -->
+    <div class="team-card reveal">
+      <div class="team-img-placeholder">
+        <div class="team-avatar-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>
+        <span>Aggiungi foto</span>
+      </div>
+      <div class="team-body">
+        <div class="team-nome">Nome Cognome</div>
+        <div class="team-ruolo">Capo Cantiere</div>
+      </div>
+    </div>
+
+    <!-- CARD 3 -->
+    <div class="team-card reveal">
+      <div class="team-img-placeholder">
+        <div class="team-avatar-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>
+        <span>Aggiungi foto</span>
+      </div>
+      <div class="team-body">
+        <div class="team-nome">Nome Cognome</div>
+        <div class="team-ruolo">Geometra / Progettista</div>
+      </div>
+    </div>
+
+    <!-- CARD 4 -->
+    <div class="team-card reveal">
+      <div class="team-img-placeholder">
+        <div class="team-avatar-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>
+        <span>Aggiungi foto</span>
+      </div>
+      <div class="team-body">
+        <div class="team-nome">Nome Cognome</div>
+        <div class="team-ruolo">Resp. Sicurezza</div>
+      </div>
+    </div>
+
+    <!-- CARD GRUPPO WIDE -->
+    <div class="team-card wide reveal">
+      <div class="team-img-placeholder">
+        <div class="team-avatar-icon">
+          <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        </div>
+        <span>Aggiungi foto di gruppo</span>
+      </div>
+      <div class="team-body">
+        <div class="team-ruolo">Il nostro team</div>
+        <div class="team-nome">Squadra Macri S.r.l.</div>
+        <div class="team-desc">9 professionisti specializzati nell'edilizia residenziale e non residenziale. Dal 2021 costruiamo con passione e precisione nel territorio di Giulianova e provincia.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ CERTIFICAZIONI ═══ -->
+<section id="certificazioni">
+  <p class="section-tag reveal">Qualità certificata</p>
+  <h2 class="section-title reveal">Le nostre certificazioni</h2>
+  <p class="section-body reveal">Macri S.r.l. opera nel rispetto delle normative vigenti e mantiene aggiornate le proprie qualificazioni nel settore edile.</p>
+
+  <div class="cert-grid">
+
+    <!-- ══ CERTIFICAZIONE 1 – SOA ══
+         Per collegare il PDF: sostituisci href="#" con href="certificazioni/soa.pdf"
+         e rimuovi la classe "pending" dal .cert-link
+    -->
+    <div class="cert-card reveal">
+      <div class="cert-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      </div>
+      <div class="cert-sigla">SOA</div>
+      <div class="cert-nome">Attestazione SOA</div>
+      <div class="cert-desc">
+        Certificazione rilasciata da un Organismo di Attestazione (SOA) che qualifica l'impresa
+        alla partecipazione agli appalti pubblici per lavori di importo superiore a 150.000 €.
+        Categoria OG1 — Edifici civili e industriali.
+      </div>
+      <div class="cert-footer">
+        <div class="cert-scadenza">
+          Scadenza
+          <strong>Inserisci data</strong>
+        </div>
+        <!-- Quando hai il PDF: rimuovi "pending" e metti href="certificazioni/soa.pdf" -->
+        <a class="cert-link pending" href="#" onclick="return false">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          PDF in caricamento
+        </a>
+      </div>
+    </div>
+
+    <!-- ══ CERTIFICAZIONE 2 – UNI EN ISO 9001 ══ -->
+    <div class="cert-card reveal">
+      <div class="cert-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      </div>
+      <div class="cert-sigla">ISO</div>
+      <div class="cert-nome">UNI EN ISO 9001:2015</div>
+      <div class="cert-desc">
+        Certificazione del Sistema di Gestione per la Qualità. Garantisce che i processi aziendali
+        siano orientati alla soddisfazione del cliente e al miglioramento continuo delle prestazioni.
+      </div>
+      <div class="cert-footer">
+        <div class="cert-scadenza">
+          Scadenza
+          <strong>Inserisci data</strong>
+        </div>
+        <a class="cert-link pending" href="#" onclick="return false">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          PDF in caricamento
+        </a>
+      </div>
+    </div>
+
+    <!-- ══ CERTIFICAZIONE 3 – personalizzabile ══
+         Puoi cambiare sigla, nome e descrizione con la tua terza certificazione (es. UNI, DURC, ecc.)
+    -->
+    <div class="cert-card reveal">
+      <div class="cert-icon">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      </div>
+      <div class="cert-sigla">UNI</div>
+      <div class="cert-nome">Nome certificazione</div>
+      <div class="cert-desc">
+        Descrizione della certificazione: ente rilasciante, ambito di applicazione e
+        validità nel contesto delle costruzioni edili.
+      </div>
+      <div class="cert-footer">
+        <div class="cert-scadenza">
+          Scadenza
+          <strong>Inserisci data</strong>
+        </div>
+        <a class="cert-link pending" href="#" onclick="return false">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          PDF in caricamento
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ CHI SIAMO ═══ -->
+<section id="chi-siamo">
+  <div>
+    <p class="section-tag reveal">La nostra storia</p>
+    <h2 class="section-title reveal">Nati in Abruzzo,<br />cresciuti con determinazione</h2>
+    <p class="section-body reveal">Macri S.r.l. è una società a responsabilità limitata con sede a Giulianova, fondata nel 2021 con l'obiettivo di offrire servizi edilizi di qualità nel tessuto produttivo teramano e abruzzese.</p>
+    <div class="timeline">
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div>
+          <div class="tl-year">Marzo 2021</div>
+          <div class="tl-text">Fondazione di Macri S.r.l. e iscrizione alla Camera di Commercio di Teramo (REA 200841).</div>
+        </div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div>
+          <div class="tl-year">2021 – 2024</div>
+          <div class="tl-text">Crescita costante del portafoglio commesse e del team, con continuo sviluppo delle competenze e consolidamento della presenza sul territorio.</div>
+        </div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div>
+          <div class="tl-year">Oggi</div>
+          <div class="tl-text">Operatività consolidata nel settore ATECO 41.2, con cantieri residenziali e non residenziali su tutto il territorio provinciale.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chi-img-wrap reveal">
+    <div class="chi-img"></div>
+    <!-- 🔁 Sostituisci .chi-img con <img class="chi-img" src="foto-cantiere.jpg" alt="Cantiere Macri"> -->
+    <div class="chi-img-badge">
+      <span class="big">4</span>
+      <span class="small">anni di attività</span>
+    </div>
+    <div class="chi-img-accent"></div>
+  </div>
+</section>
+
+<!-- ═══ FORM RICHIESTA ═══ -->
+<section id="form-richiesta">
+  <p class="section-tag reveal">Scrivici</p>
+  <h2 class="section-title reveal">Invia una richiesta</h2>
+  <p class="section-body reveal">Compila il modulo per ricevere un preventivo o per avere maggiori informazioni. Ti risponderemo entro 24 ore.</p>
+
+  <div class="form-wrap reveal">
+    <div id="form-fields">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="f-nome">Nome e Cognome *</label>
+          <input class="form-input" type="text" id="f-nome" placeholder="Es. Mario Rossi" autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-email">Email *</label>
+          <input class="form-input" type="email" id="f-email" placeholder="mario@esempio.it" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-tel">Telefono</label>
+          <input class="form-input" type="tel" id="f-tel" placeholder="+39 000 000 0000" autocomplete="tel" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-tipo">Tipo di intervento *</label>
+          <select class="form-select" id="f-tipo">
+            <option value="" disabled selected>Seleziona un'opzione</option>
+            <option>Edificio Residenziale (nuova costruzione)</option>
+            <option>Edificio Non Residenziale</option>
+            <option>Ristrutturazione</option>
+            <option>Capannone / Industriale</option>
+            <option>Spazio Commerciale</option>
+            <option>Altro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-comune">Comune dell'intervento</label>
+          <input class="form-input" type="text" id="f-comune" placeholder="Es. Giulianova (TE)" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-budget">Budget indicativo</label>
+          <select class="form-select" id="f-budget">
+            <option value="" disabled selected>Seleziona una fascia</option>
+            <option>Fino a € 50.000</option>
+            <option>€ 50.000 – € 150.000</option>
+            <option>€ 150.000 – € 500.000</option>
+            <option>Oltre € 500.000</option>
+            <option>Non definito</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label" for="f-msg">Descrizione del progetto *</label>
+          <textarea class="form-textarea" id="f-msg" placeholder="Descrivi il tuo progetto: dimensioni, stato attuale, tempistiche e qualsiasi informazione utile…"></textarea>
+        </div>
+        <div class="form-privacy">
+          <input type="checkbox" id="f-privacy" />
+          <label for="f-privacy">Ho letto e accetto la <a href="#" style="color:var(--blu-chiaro);text-decoration:underline">Privacy Policy</a>. I dati saranno usati esclusivamente per rispondere alla presente richiesta (GDPR - Reg. UE 2016/679).</label>
+        </div>
+        <div class="form-submit">
+          <button class="btn-submit" id="btn-invia" type="button">
+            Invia richiesta
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <span class="form-note">* Campi obbligatori · Risposta entro 24h lavorative</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-success" id="form-success">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h3>Richiesta inviata!</h3>
+      <p>Grazie per averci contattato. Ti risponderemo entro 24 ore lavorative.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTATTI ═══ -->
+<section id="contatti">
+  <p class="section-tag reveal">Dove siamo</p>
+  <h2 class="section-title reveal">Vieni a trovarci</h2>
+  <div class="contatti-grid">
+    <div>
+      <div class="info-item reveal">
+        <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+        <div>
+          <div class="info-label">Sede legale</div>
+          <div class="info-value">Via Traversa Parere 16<br />64021 Giulianova (TE)</div>
+        </div>
+      </div>
+      <div class="info-item reveal">
+        <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div>
+          <div class="info-label">Sede uffici</div>
+          <div class="info-value">Strada Provinciale 262 n° 37<br />64023 Mosciano Sant'Angelo (TE)</div>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=42.7138799,13.9097735" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:0.75rem;font-weight:500;color:var(--blu-chiaro);text-decoration:none;letter-spacing:0.04em;">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            Ottieni indicazioni
+          </a>
+        </div>
+      </div>
+      <div class="info-item reveal">
+        <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.58a1 1 0 01-.24 1.01l-2.21 2.2z"/></svg></div>
+        <div>
+          <div class="info-label">Telefono</div>
+          <div class="info-value info-value-tel"><a href="tel:+390859040022" style="color:inherit;text-decoration:none">085 904 0022</a></div>
+        </div>
+      </div>
+      <div class="info-item reveal">
+        <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
+        <div>
+          <div class="info-label">Email</div>
+          <div class="info-value info-value-email"><a href="mailto:info@macrisrlcostruzioni.com" style="color:inherit;text-decoration:none">info@macrisrlcostruzioni.com</a></div>
+        </div>
+      </div>
+      <div class="info-item reveal">
+        <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
+        <div>
+          <div class="info-label">Dati societari</div>
+          <div class="info-value">P.IVA 02091860672 · REA TE-200841</div>
+        </div>
+      </div>
+    </div>
+    <div class="map-box reveal">
+      <div id="leaflet-map"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div><strong>Macri S.r.l.</strong> &nbsp;—&nbsp; Via Traversa Parere 16, 64021 Giulianova (TE) &nbsp;·&nbsp; <a href="tel:+390859040022">085 904 0022</a> &nbsp;·&nbsp; <a href="mailto:info@macrisrlcostruzioni.com">info@macrisrlcostruzioni.com</a></div>
+  <div>P.IVA 02091860672 &nbsp;·&nbsp; REA TE-200841 &nbsp;·&nbsp; © 2025 &nbsp;·&nbsp; <a href="#">Privacy Policy</a></div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ============================================================
+   ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗
+  ██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝
+  ██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
+  ██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
+  ╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
+   ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
+  Modifica qui sotto per personalizzare il sito.
+  NON modificare nulla dopo la riga "FINE CONFIG".
+============================================================ */
+
+const CONFIG = {
+
+  /* ── AZIENDA ─────────────────────────────────────────── */
+  azienda: {
+    nome:       'Macri S.r.l.',
+    indirizzo:  'Via Traversa Parere 16',
+    citta:      '64021 Giulianova (TE)',
+    uffici:     'Strada Provinciale 262 n° 37',
+    citta_uffici: '64023 Mosciano Sant\'Angelo (TE)',
+    telefono:   '+39 085 904 0022',
+    email:      'info@macrisrlcostruzioni.com',
+    piva:       '02091860672',
+    rea:        'TE-200841',
+    anno:       '2025',
+    sito_url:   'https://tuousername.github.io/macri-srl/', // aggiorna con dominio definitivo
+  },
+
+  /* ── MAPPA ───────────────────────────────────────────── */
+  mappa: {
+    lat:  42.7559,
+    lng:  13.9599,
+    zoom: 12,
+    lat2: 42.7138799,
+    lng2: 13.9097735,
+  },
+
+  /* ── FORM (Web3Forms) ────────────────────────────────── */
+  form: {
+    access_key: '821cc9de-a678-48d5-8b6b-f059d77f8900',
+    subject:    'Nuova richiesta preventivo – Macri S.r.l.',
+    from_name:  'Sito Macri S.r.l.',
+  },
+
+  /* ── COLORI ──────────────────────────────────────────── */
+  colori: {
+    blu:         '#0a2240',   // colore principale scuro (navbar, footer, hover servizi)
+    blu_medio:   '#163a6b',   // blu intermedio
+    blu_chiaro:  '#1e5aad',   // blu per icone, label form, hover
+    accento:     '#41b678',   // verde — bottoni, linee decorative, badge, pin mappa
+    accento_dark:'#2e8a58',   // verde scuro (hover bottoni)
+  },
+
+  /* ── IMMAGINI ────────────────────────────────────────── */
+  // Per usare foto locali: metti il file nella stessa cartella di index.html
+  // e scrivi solo il nome, es. 'hero.jpg'
+  // Per URL esterni: incolla l'URL completo
+  immagini: {
+    // ── Sfondi principali ──
+    // Blueprint su tavolo da disegno, vista dall'alto — nessuna persona
+    hero:          'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1800&q=80&auto=format&fit=crop',
+    // Rotoli di blueprint su tavolo legno con strumenti tecnici
+    banner_mid:    'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1600&q=80&auto=format&fit=crop',
+    // Piano architettonico su tavolo con righello e compassi
+    chi_siamo:     'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80&auto=format&fit=crop',
+    // Documenti tecnici e laptop su scrivania ufficio
+    form_sfondo:   'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80&auto=format&fit=crop',
+    // Blueprint closeup per anteprima social
+    og_preview:    'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&q=80',
+
+    // ── Progetti ──
+    // Edificio residenziale esterno — nessuna persona
+    progetto_1:    'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=80&auto=format&fit=crop',
+    // Edificio moderno facciata
+    progetto_2:    'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80&auto=format&fit=crop',
+    // Casa residenziale completata
+    progetto_3:    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80&auto=format&fit=crop',
+    // Edificio commerciale facciata
+    progetto_4:    'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=800&q=80&auto=format&fit=crop',
+    // Edificio moderno vetro acciaio
+    progetto_5:    'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80&auto=format&fit=crop',
+    // Edificio residenziale con giardino
+    progetto_6:    'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=800&q=80&auto=format&fit=crop',
+
+    // ── Team — da compilare ──
+    team_1:        '',
+    team_2:        '',
+    team_3:        '',
+    team_4:        '',
+    team_gruppo:   '',
+  },
+
+};
+
+/* ============================================================
+   FINE CONFIG — non modificare oltre questa riga
+============================================================ */
+
+  // ── Applica colori CSS ──
+  const r = document.documentElement.style;
+  r.setProperty('--blu',          CONFIG.colori.blu);
+  r.setProperty('--blu-medio',    CONFIG.colori.blu_medio);
+  r.setProperty('--blu-chiaro',   CONFIG.colori.blu_chiaro);
+  r.setProperty('--accento',      CONFIG.colori.accento);
+  r.setProperty('--accento-scuro',CONFIG.colori.accento_dark);
+
+  // ── Applica immagini sfondo ──
+  document.getElementById('heroBg').style.background =
+    `linear-gradient(to bottom, rgba(5,15,30,0.35) 0%, rgba(5,15,30,0.75) 100%), url('${CONFIG.immagini.hero}') center/cover no-repeat`;
+
+  const bannerMid = document.querySelector('.banner-mid');
+  if (bannerMid) bannerMid.style.background =
+    `linear-gradient(to right, rgba(5,15,30,0.88) 40%, rgba(5,15,30,0.4) 100%), url('${CONFIG.immagini.banner_mid}') center/cover no-repeat fixed`;
+
+  const chiImg = document.querySelector('.chi-img');
+  if (chiImg) chiImg.style.background =
+    `linear-gradient(to bottom, rgba(5,15,30,0.2), rgba(5,15,30,0.6)), url('${CONFIG.immagini.chi_siamo}') center/cover no-repeat`;
+
+  const formSfondo = document.getElementById('form-richiesta');
+  if (formSfondo) formSfondo.style.background =
+    `linear-gradient(to bottom, rgba(5,15,30,0.92), rgba(5,15,30,0.92)), url('${CONFIG.immagini.form_sfondo}') center/cover no-repeat fixed`;
+
+  // ── Applica immagini progetti ──
+  const progettiKeys = ['progetto_1','progetto_2','progetto_3','progetto_4','progetto_5','progetto_6'];
+  document.querySelectorAll('.progetto-bg').forEach((el, i) => {
+    if (CONFIG.immagini[progettiKeys[i]])
+      el.style.backgroundImage = `url('${CONFIG.immagini[progettiKeys[i]]}')`;
+  });
+
+  // ── Applica foto team ──
+  const teamKeys = ['team_1','team_2','team_3','team_4'];
+  document.querySelectorAll('.team-card:not(.wide) .team-img-placeholder').forEach((placeholder, i) => {
+    const url = CONFIG.immagini[teamKeys[i]];
+    if (url) {
+      const img = document.createElement('img');
+      img.src = url; img.className = 'team-img'; img.alt = `Membro team ${i+1}`;
+      placeholder.replaceWith(img);
+    }
+  });
+  const gruppoPlaceholder = document.querySelector('.team-card.wide .team-img-placeholder');
+  if (gruppoPlaceholder && CONFIG.immagini.team_gruppo) {
+    const img = document.createElement('img');
+    img.src = CONFIG.immagini.team_gruppo; img.className = 'team-img'; img.alt = 'Team Macri S.r.l.';
+    gruppoPlaceholder.replaceWith(img);
+  }
+
+  // ── Applica contatti ──
+  if (CONFIG.azienda.telefono) {
+    document.querySelector('.info-value-tel').innerHTML =
+      `<a href="tel:${CONFIG.azienda.telefono}" style="color:inherit;text-decoration:none">${CONFIG.azienda.telefono}</a>`;
+  }
+  if (CONFIG.azienda.email) {
+    document.querySelector('.info-value-email').innerHTML =
+      `<a href="mailto:${CONFIG.azienda.email}" style="color:inherit;text-decoration:none">${CONFIG.azienda.email}</a>`;
+  }
+
+  // ── Hamburger menu mobile ──
+  const hamburger = document.getElementById('hamburger');
+  const navMobile = document.getElementById('navMobile');
+  hamburger.addEventListener('click', () => {
+    const isOpen = hamburger.classList.toggle('open');
+    navMobile.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+  navMobile.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      navMobile.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+
+  // ── Navbar scroll ──
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ── Hero parallax & load ──
+  const heroBg = document.getElementById('heroBg');
+  setTimeout(() => heroBg.classList.add('loaded'), 100);
+  window.addEventListener('scroll', () => {
+    heroBg.style.transform = `scale(1) translateY(${window.scrollY * 0.3}px)`;
+  });
+
+  // ── Reveal on scroll ──
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) setTimeout(() => e.target.classList.add('in'), i * 60);
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // ── Mappa Leaflet/OpenStreetMap ──
+  const map = L.map('leaflet-map', { zoomControl: true, scrollWheelZoom: false })
+    .setView([CONFIG.mappa.lat, CONFIG.mappa.lng], CONFIG.mappa.zoom);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(map);
+
+  // Pin blu (sede legale)
+  const iconBlu = L.divIcon({
+    className: '',
+    html: `<div style="width:32px;height:40px;background:${CONFIG.colori.blu};border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(10,34,64,0.4)"><div style="width:11px;height:11px;background:${CONFIG.colori.accento};border-radius:50%;transform:rotate(45deg)"></div></div>`,
+    iconSize: [32,40], iconAnchor: [16,40], popupAnchor: [0,-42]
+  });
+
+  // Pin oro (sede uffici)
+  const iconOro = L.divIcon({
+    className: '',
+    html: `<div style="width:32px;height:40px;background:${CONFIG.colori.accento};border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(201,168,76,0.5)"><div style="width:11px;height:11px;background:${CONFIG.colori.blu};border-radius:50%;transform:rotate(45deg)"></div></div>`,
+    iconSize: [32,40], iconAnchor: [16,40], popupAnchor: [0,-42]
+  });
+
+  // Marker sede legale
+  L.marker([CONFIG.mappa.lat, CONFIG.mappa.lng], { icon: iconBlu }).addTo(map)
+    .bindPopup(`<div class="map-popup-title">${CONFIG.azienda.nome}</div><div class="map-popup-addr"><strong>Sede legale</strong><br/>${CONFIG.azienda.indirizzo}<br/>${CONFIG.azienda.citta}</div><a class="map-popup-link" href="https://www.google.com/maps/dir/?api=1&destination=${CONFIG.mappa.lat},${CONFIG.mappa.lng}" target="_blank" rel="noopener">↗ Ottieni indicazioni</a>`, { maxWidth: 230 });
+
+  // Marker sede uffici
+  L.marker([CONFIG.mappa.lat2, CONFIG.mappa.lng2], { icon: iconOro }).addTo(map)
+    .bindPopup(`<div class="map-popup-title">${CONFIG.azienda.nome}</div><div class="map-popup-addr"><strong>Sede uffici</strong><br/>${CONFIG.azienda.uffici}<br/>${CONFIG.azienda.citta_uffici}</div><a class="map-popup-link" href="https://www.google.com/maps/dir/?api=1&destination=${CONFIG.mappa.lat2},${CONFIG.mappa.lng2}" target="_blank" rel="noopener">↗ Ottieni indicazioni</a>`, { maxWidth: 230 });
+
+  // Adatta la vista per contenere entrambi i marker
+  const bounds = L.latLngBounds(
+    [CONFIG.mappa.lat, CONFIG.mappa.lng],
+    [CONFIG.mappa.lat2, CONFIG.mappa.lng2]
+  );
+  map.fitBounds(bounds, { padding: [40, 40] });
+
+  map.once('click', () => map.scrollWheelZoom.enable());
+
+  // ── Form → Web3Forms ──
+  document.getElementById('btn-invia').addEventListener('click', async function() {
+    const nome   = document.getElementById('f-nome').value.trim();
+    const email  = document.getElementById('f-email').value.trim();
+    const tel    = document.getElementById('f-tel').value.trim();
+    const tipo   = document.getElementById('f-tipo').value;
+    const comune = document.getElementById('f-comune').value.trim();
+    const budget = document.getElementById('f-budget').value;
+    const msg    = document.getElementById('f-msg').value.trim();
+    const priv   = document.getElementById('f-privacy').checked;
+
+    ['f-nome','f-email','f-tipo','f-msg'].forEach(id => document.getElementById(id).style.borderColor = '');
+    document.getElementById('f-privacy').style.outline = '';
+
+    let ok = true;
+    if (!nome)  { document.getElementById('f-nome').style.borderColor  = '#c0392b'; ok = false; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+                { document.getElementById('f-email').style.borderColor = '#c0392b'; ok = false; }
+    if (!tipo)  { document.getElementById('f-tipo').style.borderColor  = '#c0392b'; ok = false; }
+    if (!msg)   { document.getElementById('f-msg').style.borderColor   = '#c0392b'; ok = false; }
+    if (!priv)  { document.getElementById('f-privacy').style.outline   = '2px solid #c0392b'; ok = false; }
+    if (!ok) return;
+
+    const btn = document.getElementById('btn-invia');
+    btn.innerHTML = 'Invio in corso…'; btn.disabled = true;
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          access_key: CONFIG.form.access_key,
+          subject:    CONFIG.form.subject,
+          from_name:  CONFIG.form.from_name,
+          name: nome, email: email,
+          message: [
+            `Nome: ${nome}`, `Email: ${email}`,
+            `Telefono: ${tel || 'non fornito'}`,
+            `Tipo intervento: ${tipo}`,
+            `Comune: ${comune || 'non specificato'}`,
+            `Budget: ${budget || 'non specificato'}`,
+            ``, `Descrizione:`, msg
+          ].join('\n')
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('form-fields').style.display = 'none';
+        document.getElementById('form-success').classList.add('show');
+      } else { throw new Error(); }
+    } catch(err) {
+      btn.innerHTML = 'Invia richiesta <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+      btn.disabled = false;
+      alert('Errore durante l\'invio. Riprova o contattaci direttamente per email.');
+    }
+  });
+</script>
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = hamburger.classList.toggle('open');
+    navMobile.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+
+  // Chiudi menu al click su un link
+  navMobile.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      navMobile.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+
+  // ── Navbar scroll ──
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ── Hero parallax & load ──
+  const heroBg = document.getElementById('heroBg');
+  setTimeout(() => heroBg.classList.add('loaded'), 100);
+  window.addEventListener('scroll', () => {
+    heroBg.style.transform = `scale(1) translateY(${window.scrollY * 0.3}px)`;
+  });
+
+  // ── Reveal on scroll ──
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('in'), i * 60);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // ── Mappa Leaflet/OpenStreetMap ──
+  const LAT = 42.7559, LNG = 13.9599;
+  const map = L.map('leaflet-map', { zoomControl: true, scrollWheelZoom: false }).setView([LAT, LNG], 16);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(map);
+
+  const icon = L.divIcon({
+    className: '',
+    html: `<div style="width:36px;height:44px;background:#0a2240;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(10,34,64,0.4)"><div style="width:13px;height:13px;background:#41b678;border-radius:50%;transform:rotate(45deg)"></div></div>`,
+    iconSize: [36,44], iconAnchor: [18,44], popupAnchor: [0,-46]
+  });
+
+  L.marker([LAT, LNG], { icon }).addTo(map)
+    .bindPopup(`<div class="map-popup-title">Macri S.r.l.</div><div class="map-popup-addr">Via Traversa Parere 16<br/>64021 Giulianova (TE)</div><a class="map-popup-link" href="https://www.google.com/maps/dir/?api=1&destination=42.7559,13.9599" target="_blank" rel="noopener">↗ Ottieni indicazioni</a>`, { maxWidth: 220 })
+    .openPopup();
+
+  map.once('click', () => map.scrollWheelZoom.enable());
+
+  // ── Form → Web3Forms ──
+  document.getElementById('btn-invia').addEventListener('click', async function() {
+    const nome   = document.getElementById('f-nome').value.trim();
+    const email  = document.getElementById('f-email').value.trim();
+    const tel    = document.getElementById('f-tel').value.trim();
+    const tipo   = document.getElementById('f-tipo').value;
+    const comune = document.getElementById('f-comune').value.trim();
+    const budget = document.getElementById('f-budget').value;
+    const msg    = document.getElementById('f-msg').value.trim();
+    const priv   = document.getElementById('f-privacy').checked;
+
+    // Reset errori
+    ['f-nome','f-email','f-tipo','f-msg'].forEach(id => document.getElementById(id).style.borderColor = '');
+    document.getElementById('f-privacy').style.outline = '';
+
+    // Validazione
+    let ok = true;
+    if (!nome)  { document.getElementById('f-nome').style.borderColor  = '#c0392b'; ok = false; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+                { document.getElementById('f-email').style.borderColor = '#c0392b'; ok = false; }
+    if (!tipo)  { document.getElementById('f-tipo').style.borderColor  = '#c0392b'; ok = false; }
+    if (!msg)   { document.getElementById('f-msg').style.borderColor   = '#c0392b'; ok = false; }
+    if (!priv)  { document.getElementById('f-privacy').style.outline   = '2px solid #c0392b'; ok = false; }
+    if (!ok) return;
+
+    const btn = document.getElementById('btn-invia');
+    btn.innerHTML = 'Invio in corso…'; btn.disabled = true;
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          access_key:  '821cc9de-a678-48d5-8b6b-f059d77f8900',
+          subject:     'Nuova richiesta preventivo – Macri S.r.l.',
+          from_name:   'Sito Macri S.r.l.',
+          name:        nome,
+          email:       email,
+          message: [
+            `Nome: ${nome}`,
+            `Email: ${email}`,
+            `Telefono: ${tel || 'non fornito'}`,
+            `Tipo intervento: ${tipo}`,
+            `Comune: ${comune || 'non specificato'}`,
+            `Budget: ${budget || 'non specificato'}`,
+            ``,
+            `Descrizione:`,
+            msg
+          ].join('\n')
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('form-fields').style.display = 'none';
+        document.getElementById('form-success').classList.add('show');
+      } else {
+        throw new Error('Risposta negativa');
+      }
+    } catch(err) {
+      btn.innerHTML = 'Invia richiesta <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+      btn.disabled = false;
+      alert('Errore durante l\'invio. Riprova o contattaci direttamente per email.');
+    }
+  });
+</script>
+</body>
+</html>
