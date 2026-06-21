@@ -14,8 +14,8 @@
       --blu:        #0a2240;
       --blu-medio:  #163a6b;
       --blu-chiaro: #1e5aad;
-      --accento:    #c9a84c;
-      --accento-scuro: #a07828;
+      --accento:    #41b678;
+      --accento-scuro: #2e8a58;
       --bianco:     #ffffff;
       --grigio-bg:  #f4f4f2;
       --testo:      #111827;
@@ -80,7 +80,7 @@
       position: absolute; inset: 0; z-index: 0;
       background:
         linear-gradient(to bottom, rgba(5,15,30,0.35) 0%, rgba(5,15,30,0.75) 100%),
-        url('https://images.unsplash.com/photo-1590650516494-0c8e4a4dd67e?w=1800&q=80&auto=format&fit=crop') center/cover no-repeat;
+        url('https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1800&q=80&auto=format&fit=crop') center/cover no-repeat;
       /* 🔁 Sostituisci l'URL sopra con la tua foto hero */
       transform: scale(1.04);
       transition: transform 8s ease;
@@ -151,7 +151,7 @@
     /* ─────────── STATS ─────────── */
     .stats {
       background: var(--blu);
-      display: grid; grid-template-columns: repeat(4,1fr);
+      display: grid; grid-template-columns: repeat(3,1fr);
     }
     .stat {
       padding: 2.4rem 2rem; text-align: center;
@@ -298,11 +298,14 @@
     .progetto-ph {
       position: absolute; inset: 0;
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 0.6rem;
-      background: var(--blu-medio);
+      align-items: center; justify-content: center; gap: 0.7rem;
+      background: linear-gradient(135deg, #0a2240 0%, #163a6b 100%);
     }
-    .progetto-ph svg { opacity: 0.2; }
-    .progetto-ph span { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
+    .progetto-ph svg { opacity: 0.35; }
+    .progetto-ph span {
+      font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(201,168,76,0.5);
+    }
 
     /* ─────────── BANNER INTERMEDIO ─────────── */
     .banner-mid {
@@ -310,7 +313,7 @@
       overflow: hidden;
       background:
         linear-gradient(to right, rgba(5,15,30,0.88) 40%, rgba(5,15,30,0.4) 100%),
-        url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80&auto=format&fit=crop') center/cover no-repeat fixed;
+        url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1600&q=80&auto=format&fit=crop') center/cover no-repeat fixed;
       /* 🔁 Sostituisci l'URL con una tua foto cantiere */
     }
     .banner-mid-content { max-width: 560px; }
@@ -400,7 +403,7 @@
       /* 🔁 Sostituisci con <img> reale */
       background:
         linear-gradient(to bottom, rgba(5,15,30,0.2), rgba(5,15,30,0.6)),
-        url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80&auto=format&fit=crop') center/cover no-repeat;
+        url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80&auto=format&fit=crop') center/cover no-repeat;
     }
     .chi-img-badge {
       position: absolute; bottom: 2.5rem; left: -2rem;
@@ -421,7 +424,7 @@
       position: relative; overflow: hidden;
       background:
         linear-gradient(to bottom, rgba(5,15,30,0.92), rgba(5,15,30,0.92)),
-        url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80&auto=format&fit=crop') center/cover no-repeat fixed;
+        url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80&auto=format&fit=crop') center/cover no-repeat fixed;
       /* 🔁 Sostituisci l'URL con una tua foto */
       padding: 7rem 5rem;
     }
@@ -691,13 +694,38 @@
 <!-- ═══ NAV ═══ -->
 <nav id="navbar">
   <a href="#" class="nav-logo">
-    MACRI
-    <span class="nav-logo-badge">S.r.l.</span>
+    <svg width="38" height="38" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+      <!-- Ingranaggio semplice: cerchio esterno con denti rettangolari -->
+      <!-- Denti: 8 denti uniformi ottenuti ruotando un rettangolo -->
+      <g fill="white">
+        <rect x="17.5" y="0"  width="5" height="7" rx="1.5"/>
+        <rect x="17.5" y="33" width="5" height="7" rx="1.5"/>
+        <rect x="0"  y="17.5" width="7" height="5" rx="1.5"/>
+        <rect x="33" y="17.5" width="7" height="5" rx="1.5"/>
+        <rect x="3.5" y="3.5" width="5" height="7" rx="1.5" transform="rotate(45 6 7)"/>
+        <rect x="28"  y="3.5" width="5" height="7" rx="1.5" transform="rotate(-45 30.5 7)"/>
+        <rect x="3.5" y="29"  width="5" height="7" rx="1.5" transform="rotate(-45 6 33)"/>
+        <rect x="28"  y="29"  width="5" height="7" rx="1.5" transform="rotate(45 30.5 33)"/>
+      </g>
+      <!-- Cerchio corpo ingranaggio -->
+      <circle cx="20" cy="20" r="14" fill="white"/>
+      <!-- Foro centrale -->
+      <circle cx="20" cy="20" r="6" fill="#0a2240"/>
+      <!-- Casa stilizzata: prisma semplice — tetto triangolare + rettangolo corpo, nessun dettaglio -->
+      <polygon points="20,9 28,16 12,16" fill="#0a2240"/>
+      <rect x="13" y="16" width="14" height="9" fill="#0a2240"/>
+    </svg>
+    <span style="display:flex;flex-direction:column;line-height:1.15;gap:0">
+      <span style="display:flex;align-items:baseline;gap:4px">
+        <span style="font-family:'DM Sans',sans-serif;font-size:1.2rem;font-weight:700;color:#fff;letter-spacing:0.05em">MACRI</span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:300;color:rgba(255,255,255,0.6);letter-spacing:0.06em">SRL</span>
+      </span>
+      <span style="font-family:'DM Sans',sans-serif;font-size:0.52rem;font-weight:300;color:rgba(255,255,255,0.45);letter-spacing:0.22em;text-transform:uppercase">Costruzioni</span>
+    </span>
   </a>
   <ul>
     <li><a href="#servizi">Servizi</a></li>
     <li><a href="#progetti">Progetti</a></li>
-    <li><a href="#team">Il Team</a></li>
     <li><a href="#certificazioni">Certificazioni</a></li>
     <li><a href="#chi-siamo">Chi Siamo</a></li>
     <li><a href="#contatti">Contatti</a></li>
@@ -712,7 +740,6 @@
 <div class="nav-mobile" id="navMobile">
   <a href="#servizi">Servizi</a>
   <a href="#progetti">Progetti</a>
-  <a href="#team">Il Team</a>
   <a href="#certificazioni">Certificazioni</a>
   <a href="#chi-siamo">Chi Siamo</a>
   <a href="#contatti">Contatti</a>
@@ -753,10 +780,6 @@
   <div class="stat">
     <div class="stat-n">9</div>
     <div class="stat-label">Professionisti</div>
-  </div>
-  <div class="stat">
-    <div class="stat-n">2<span>,4M€</span></div>
-    <div class="stat-label">Fatturato 2024</div>
   </div>
   <div class="stat">
     <div class="stat-n">ATECO<br /><span style="font-size:1.8rem">41.2</span></div>
@@ -821,10 +844,13 @@
   <div class="progetti-grid">
 
     <!-- CARD 1 – grande (span 2)
-         Per aggiungere foto: rimuovi .progetto-ph e aggiungi style="background-image:url('foto.jpg')" al .progetto-bg -->
+         Per aggiungere foto: sostituisci .progetto-ph con style="background-image:url('foto.jpg')" sul .progetto-bg -->
     <div class="progetto-card reveal">
-      <div class="progetto-bg" style="background-image:url('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=80&auto=format&fit=crop')">
-        <!-- 🔁 Sostituisci URL con tua foto -->
+      <div class="progetto-bg">
+        <div class="progetto-ph">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="8" width="40" height="32" rx="2" stroke="#41b678" stroke-width="1.5"/><circle cx="16" cy="20" r="4" stroke="#41b678" stroke-width="1.5"/><path d="M4 36l10-10 8 8 6-6 16 8" stroke="#41b678" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Aggiungi foto</span>
+        </div>
       </div>
       <div class="progetto-overlay"></div>
       <div class="progetto-body">
@@ -840,7 +866,12 @@
 
     <!-- CARD 2 -->
     <div class="progetto-card reveal">
-      <div class="progetto-bg" style="background-image:url('https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80&auto=format&fit=crop')"><!-- 🔁 --></div>
+      <div class="progetto-bg">
+        <div class="progetto-ph">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="8" width="40" height="32" rx="2" stroke="#41b678" stroke-width="1.5"/><circle cx="16" cy="20" r="4" stroke="#41b678" stroke-width="1.5"/><path d="M4 36l10-10 8 8 6-6 16 8" stroke="#41b678" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Aggiungi foto</span>
+        </div>
+      </div>
       <div class="progetto-overlay"></div>
       <div class="progetto-body">
         <span class="progetto-tag">Commerciale</span>
@@ -855,7 +886,12 @@
 
     <!-- CARD 3 -->
     <div class="progetto-card reveal">
-      <div class="progetto-bg" style="background-image:url('https://images.unsplash.com/photo-1599809275671-b5942cabc7a2?w=800&q=80&auto=format&fit=crop')"><!-- 🔁 --></div>
+      <div class="progetto-bg">
+        <div class="progetto-ph">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="8" width="40" height="32" rx="2" stroke="#41b678" stroke-width="1.5"/><circle cx="16" cy="20" r="4" stroke="#41b678" stroke-width="1.5"/><path d="M4 36l10-10 8 8 6-6 16 8" stroke="#41b678" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Aggiungi foto</span>
+        </div>
+      </div>
       <div class="progetto-overlay"></div>
       <div class="progetto-body">
         <span class="progetto-tag">Ristrutturazione</span>
@@ -870,7 +906,12 @@
 
     <!-- CARD 4 -->
     <div class="progetto-card reveal">
-      <div class="progetto-bg" style="background-image:url('https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80&auto=format&fit=crop')"><!-- 🔁 --></div>
+      <div class="progetto-bg">
+        <div class="progetto-ph">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="8" width="40" height="32" rx="2" stroke="#41b678" stroke-width="1.5"/><circle cx="16" cy="20" r="4" stroke="#41b678" stroke-width="1.5"/><path d="M4 36l10-10 8 8 6-6 16 8" stroke="#41b678" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Aggiungi foto</span>
+        </div>
+      </div>
       <div class="progetto-overlay"></div>
       <div class="progetto-body">
         <span class="progetto-tag">Residenziale</span>
@@ -885,7 +926,12 @@
 
     <!-- CARD 5 -->
     <div class="progetto-card reveal">
-      <div class="progetto-bg" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80&auto=format&fit=crop')"><!-- 🔁 --></div>
+      <div class="progetto-bg">
+        <div class="progetto-ph">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="8" width="40" height="32" rx="2" stroke="#41b678" stroke-width="1.5"/><circle cx="16" cy="20" r="4" stroke="#41b678" stroke-width="1.5"/><path d="M4 36l10-10 8 8 6-6 16 8" stroke="#41b678" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Aggiungi foto</span>
+        </div>
+      </div>
       <div class="progetto-overlay"></div>
       <div class="progetto-body">
         <span class="progetto-tag">Industriale</span>
@@ -900,7 +946,12 @@
 
     <!-- CARD 6 -->
     <div class="progetto-card reveal">
-      <div class="progetto-bg" style="background-image:url('https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=800&q=80&auto=format&fit=crop')"><!-- 🔁 --></div>
+      <div class="progetto-bg">
+        <div class="progetto-ph">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="8" width="40" height="32" rx="2" stroke="#41b678" stroke-width="1.5"/><circle cx="16" cy="20" r="4" stroke="#41b678" stroke-width="1.5"/><path d="M4 36l10-10 8 8 6-6 16 8" stroke="#41b678" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Aggiungi foto</span>
+        </div>
+      </div>
       <div class="progetto-overlay"></div>
       <div class="progetto-body">
         <span class="progetto-tag">Ristrutturazione</span>
@@ -929,8 +980,8 @@
   </div>
 </div>
 
-<!-- ═══ TEAM ═══ -->
-<section id="team">
+<!-- ═══ TEAM ═══ (nascosto — rimuovere style="display:none" per riattivare e aggiungere link in navbar) -->
+<section id="team" style="display:none">
   <div class="team-header">
     <p class="section-tag reveal">Le persone</p>
     <h2 class="section-title reveal">Il nostro team</h2>
@@ -1109,7 +1160,7 @@
         <div class="tl-dot"></div>
         <div>
           <div class="tl-year">2021 – 2024</div>
-          <div class="tl-text">Crescita costante del portafoglio commesse e del team, fino a raggiungere 9 dipendenti e un fatturato di oltre 2,4 milioni di euro.</div>
+          <div class="tl-text">Crescita costante del portafoglio commesse e del team, con continuo sviluppo delle competenze e consolidamento della presenza sul territorio.</div>
         </div>
       </div>
       <div class="tl-item reveal">
@@ -1221,17 +1272,28 @@
         </div>
       </div>
       <div class="info-item reveal">
+        <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div>
+          <div class="info-label">Sede uffici</div>
+          <div class="info-value">Strada Provinciale 262 n° 37<br />64023 Mosciano Sant'Angelo (TE)</div>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=42.7138799,13.9097735" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:0.75rem;font-weight:500;color:var(--blu-chiaro);text-decoration:none;letter-spacing:0.04em;">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            Ottieni indicazioni
+          </a>
+        </div>
+      </div>
+      <div class="info-item reveal">
         <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.58a1 1 0 01-.24 1.01l-2.21 2.2z"/></svg></div>
         <div>
           <div class="info-label">Telefono</div>
-          <div class="info-value info-value-tel">Inserisci il numero</div>
+          <div class="info-value info-value-tel"><a href="tel:+390859040022" style="color:inherit;text-decoration:none">085 904 0022</a></div>
         </div>
       </div>
       <div class="info-item reveal">
         <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
         <div>
           <div class="info-label">Email</div>
-          <div class="info-value info-value-email">Inserisci l'indirizzo email</div>
+          <div class="info-value info-value-email"><a href="mailto:info@macrisrlcostruzioni.com" style="color:inherit;text-decoration:none">info@macrisrlcostruzioni.com</a></div>
         </div>
       </div>
       <div class="info-item reveal">
@@ -1250,7 +1312,7 @@
 
 <!-- ═══ FOOTER ═══ -->
 <footer>
-  <div><strong>Macri S.r.l.</strong> &nbsp;—&nbsp; Via Traversa Parere 16, 64021 Giulianova (TE)</div>
+  <div><strong>Macri S.r.l.</strong> &nbsp;—&nbsp; Via Traversa Parere 16, 64021 Giulianova (TE) &nbsp;·&nbsp; <a href="tel:+390859040022">085 904 0022</a> &nbsp;·&nbsp; <a href="mailto:info@macrisrlcostruzioni.com">info@macrisrlcostruzioni.com</a></div>
   <div>P.IVA 02091860672 &nbsp;·&nbsp; REA TE-200841 &nbsp;·&nbsp; © 2025 &nbsp;·&nbsp; <a href="#">Privacy Policy</a></div>
 </footer>
 
@@ -1274,8 +1336,10 @@ const CONFIG = {
     nome:       'Macri S.r.l.',
     indirizzo:  'Via Traversa Parere 16',
     citta:      '64021 Giulianova (TE)',
-    telefono:   '085 904 0022',                        // es. '+39 085 000 0000'
-    email:      'info@macrisrlcostruzioni.com',                        // es. 'info@macrisrl.it'
+    uffici:     'Strada Provinciale 262 n° 37',
+    citta_uffici: '64023 Mosciano Sant\'Angelo (TE)',
+    telefono:   '+39 085 904 0022',
+    email:      'info@macrisrlcostruzioni.com',
     piva:       '02091860672',
     rea:        'TE-200841',
     anno:       '2025',
@@ -1286,7 +1350,9 @@ const CONFIG = {
   mappa: {
     lat:  42.7559,
     lng:  13.9599,
-    zoom: 16,
+    zoom: 12,
+    lat2: 42.7138799,
+    lng2: 13.9097735,
   },
 
   /* ── FORM (Web3Forms) ────────────────────────────────── */
@@ -1301,8 +1367,8 @@ const CONFIG = {
     blu:         '#0a2240',   // colore principale scuro (navbar, footer, hover servizi)
     blu_medio:   '#163a6b',   // blu intermedio
     blu_chiaro:  '#1e5aad',   // blu per icone, label form, hover
-    accento:     '#c9a84c',   // oro/dorato — bottoni, dettagli, sottolineature
-    accento_dark:'#a07828',   // oro scuro (hover bottoni)
+    accento:     '#41b678',   // verde — bottoni, linee decorative, badge, pin mappa
+    accento_dark:'#2e8a58',   // verde scuro (hover bottoni)
   },
 
   /* ── IMMAGINI ────────────────────────────────────────── */
@@ -1310,26 +1376,38 @@ const CONFIG = {
   // e scrivi solo il nome, es. 'hero.jpg'
   // Per URL esterni: incolla l'URL completo
   immagini: {
-    hero:          'https://images.unsplash.com/photo-1590650516494-0c8e4a4dd67e?w=1800&q=80&auto=format&fit=crop',
-    banner_mid:    'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80&auto=format&fit=crop',
-    chi_siamo:     'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80&auto=format&fit=crop',
-    form_sfondo:   'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80&auto=format&fit=crop',
-    og_preview:    'https://images.unsplash.com/photo-1590650516494-0c8e4a4dd67e?w=1200&q=80',
+    // ── Sfondi principali ──
+    // Blueprint su tavolo da disegno, vista dall'alto — nessuna persona
+    hero:          'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1800&q=80&auto=format&fit=crop',
+    // Rotoli di blueprint su tavolo legno con strumenti tecnici
+    banner_mid:    'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1600&q=80&auto=format&fit=crop',
+    // Piano architettonico su tavolo con righello e compassi
+    chi_siamo:     'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80&auto=format&fit=crop',
+    // Documenti tecnici e laptop su scrivania ufficio
+    form_sfondo:   'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80&auto=format&fit=crop',
+    // Blueprint closeup per anteprima social
+    og_preview:    'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&q=80',
 
-    // Progetti (6 card) — sostituisci con i tuoi file o URL
+    // ── Progetti ──
+    // Edificio residenziale esterno — nessuna persona
     progetto_1:    'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=80&auto=format&fit=crop',
+    // Edificio moderno facciata
     progetto_2:    'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80&auto=format&fit=crop',
-    progetto_3:    'https://images.unsplash.com/photo-1599809275671-b5942cabc7a2?w=800&q=80&auto=format&fit=crop',
-    progetto_4:    'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80&auto=format&fit=crop',
-    progetto_5:    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80&auto=format&fit=crop',
+    // Casa residenziale completata
+    progetto_3:    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80&auto=format&fit=crop',
+    // Edificio commerciale facciata
+    progetto_4:    'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=800&q=80&auto=format&fit=crop',
+    // Edificio moderno vetro acciaio
+    progetto_5:    'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80&auto=format&fit=crop',
+    // Edificio residenziale con giardino
     progetto_6:    'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=800&q=80&auto=format&fit=crop',
 
-    // Team — sostituisci con i file delle foto delle persone, es. 'foto-mario.jpg'
-    team_1:        '',   // membro 1
-    team_2:        '',   // membro 2
-    team_3:        '',   // membro 3
-    team_4:        '',   // membro 4
-    team_gruppo:   '',   // foto di gruppo
+    // ── Team — da compilare ──
+    team_1:        '',
+    team_2:        '',
+    team_3:        '',
+    team_4:        '',
+    team_gruppo:   '',
   },
 
 };
@@ -1440,14 +1518,36 @@ const CONFIG = {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     maxZoom: 19
   }).addTo(map);
-  const icon = L.divIcon({
+
+  // Pin blu (sede legale)
+  const iconBlu = L.divIcon({
     className: '',
-    html: `<div style="width:36px;height:44px;background:${CONFIG.colori.blu};border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(10,34,64,0.4)"><div style="width:13px;height:13px;background:${CONFIG.colori.accento};border-radius:50%;transform:rotate(45deg)"></div></div>`,
-    iconSize: [36,44], iconAnchor: [18,44], popupAnchor: [0,-46]
+    html: `<div style="width:32px;height:40px;background:${CONFIG.colori.blu};border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(10,34,64,0.4)"><div style="width:11px;height:11px;background:${CONFIG.colori.accento};border-radius:50%;transform:rotate(45deg)"></div></div>`,
+    iconSize: [32,40], iconAnchor: [16,40], popupAnchor: [0,-42]
   });
-  L.marker([CONFIG.mappa.lat, CONFIG.mappa.lng], { icon }).addTo(map)
-    .bindPopup(`<div class="map-popup-title">${CONFIG.azienda.nome}</div><div class="map-popup-addr">${CONFIG.azienda.indirizzo}<br/>${CONFIG.azienda.citta}</div><a class="map-popup-link" href="https://www.google.com/maps/dir/?api=1&destination=${CONFIG.mappa.lat},${CONFIG.mappa.lng}" target="_blank" rel="noopener">↗ Ottieni indicazioni</a>`, { maxWidth: 220 })
-    .openPopup();
+
+  // Pin oro (sede uffici)
+  const iconOro = L.divIcon({
+    className: '',
+    html: `<div style="width:32px;height:40px;background:${CONFIG.colori.accento};border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(201,168,76,0.5)"><div style="width:11px;height:11px;background:${CONFIG.colori.blu};border-radius:50%;transform:rotate(45deg)"></div></div>`,
+    iconSize: [32,40], iconAnchor: [16,40], popupAnchor: [0,-42]
+  });
+
+  // Marker sede legale
+  L.marker([CONFIG.mappa.lat, CONFIG.mappa.lng], { icon: iconBlu }).addTo(map)
+    .bindPopup(`<div class="map-popup-title">${CONFIG.azienda.nome}</div><div class="map-popup-addr"><strong>Sede legale</strong><br/>${CONFIG.azienda.indirizzo}<br/>${CONFIG.azienda.citta}</div><a class="map-popup-link" href="https://www.google.com/maps/dir/?api=1&destination=${CONFIG.mappa.lat},${CONFIG.mappa.lng}" target="_blank" rel="noopener">↗ Ottieni indicazioni</a>`, { maxWidth: 230 });
+
+  // Marker sede uffici
+  L.marker([CONFIG.mappa.lat2, CONFIG.mappa.lng2], { icon: iconOro }).addTo(map)
+    .bindPopup(`<div class="map-popup-title">${CONFIG.azienda.nome}</div><div class="map-popup-addr"><strong>Sede uffici</strong><br/>${CONFIG.azienda.uffici}<br/>${CONFIG.azienda.citta_uffici}</div><a class="map-popup-link" href="https://www.google.com/maps/dir/?api=1&destination=${CONFIG.mappa.lat2},${CONFIG.mappa.lng2}" target="_blank" rel="noopener">↗ Ottieni indicazioni</a>`, { maxWidth: 230 });
+
+  // Adatta la vista per contenere entrambi i marker
+  const bounds = L.latLngBounds(
+    [CONFIG.mappa.lat, CONFIG.mappa.lng],
+    [CONFIG.mappa.lat2, CONFIG.mappa.lng2]
+  );
+  map.fitBounds(bounds, { padding: [40, 40] });
+
   map.once('click', () => map.scrollWheelZoom.enable());
 
   // ── Form → Web3Forms ──
@@ -1556,7 +1656,7 @@ const CONFIG = {
 
   const icon = L.divIcon({
     className: '',
-    html: `<div style="width:36px;height:44px;background:#0a2240;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(10,34,64,0.4)"><div style="width:13px;height:13px;background:#c9a84c;border-radius:50%;transform:rotate(45deg)"></div></div>`,
+    html: `<div style="width:36px;height:44px;background:#0a2240;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(10,34,64,0.4)"><div style="width:13px;height:13px;background:#41b678;border-radius:50%;transform:rotate(45deg)"></div></div>`,
     iconSize: [36,44], iconAnchor: [18,44], popupAnchor: [0,-46]
   });
 
